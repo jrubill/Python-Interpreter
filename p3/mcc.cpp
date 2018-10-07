@@ -9,9 +9,18 @@ int Elem::getGrade() {
     else return 'F';
 }
 
+void MCC::addFunc(std::string name, int line, int col) {
+    Func *e = new Func(name, line, col);
+    elem_list.push_back(e);
+}
+
 MCC* MCC::getInstance() {
     if (!instance) instance = new MCC();
     return instance;
+}
+
+void addToList(Elem *e) {
+
 }
 
 MCC* MCC::instance = nullptr;

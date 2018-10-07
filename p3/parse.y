@@ -56,6 +56,9 @@ decorated // Used in: compound_stmt
 	;
 funcdef // Used in: decorated, compound_stmt
 	: DEF NAME parameters COLON suite
+		{ //MCC::getInstance()->addFunc(std::string( $2 ), @1.first_line, @1.first_column );
+			std::cout << $1 << std::endl;
+		}
 	;
 parameters // Used in: funcdef
 	: LPAR varargslist RPAR
@@ -275,7 +278,7 @@ compound_stmt // Used in: stmt
 if_stmt // Used in: compound_stmt
 	: IF test COLON suite star_ELIF ELSE COLON suite
 	| IF test COLON suite star_ELIF
-	 { MCC::getInstance()->add(); }
+	 { MCC::getInstance()->add(); std::cout << "line num:" << @1.first_column << std::endl; }
 	;
 star_ELIF // Used in: if_stmt, star_ELIF
 	: star_ELIF ELIF test COLON suite
