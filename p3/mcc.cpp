@@ -8,3 +8,10 @@ int Elem::getGrade() {
     else if (complexity < 41) return 'E';
     else return 'F';
 }
+
+MCC* MCC::getInstance() {
+    if (!instance) instance = new MCC();
+    return instance;
+}
+
+MCC* MCC::instance = nullptr;

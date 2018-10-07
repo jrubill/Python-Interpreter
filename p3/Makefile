@@ -7,7 +7,7 @@ YACC = bison
 LEXFLAGS = -Wno-unused -Wno-sign-compare
 CXXFLAGS = -g -Wall -std=c++11
 
-OBJS = main.o parse.tab.o lex.yy.o
+OBJS = main.o mcc.o parse.tab.o lex.yy.o
 
 TARGET = prog
 

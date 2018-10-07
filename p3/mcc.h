@@ -3,7 +3,7 @@
 #include <iostream>
 #include <list>
 #include <map>
-#include <string>
+#include <string.h>
 
 class Elem {
 public:
@@ -36,12 +36,16 @@ class MCC {
 public:
 	static MCC *getInstance();
 	~MCC();
+	void add() { complex++; }
+	int getComplex() { return complex; }
 	// recursive to print list in order. I'm lazy :)
 	void print() { }
 private:
 	std::map<std::string, Elem *> elem_map;
 	std::list<Elem*> elem_list;
-	MCC();
+	int complex;
+	static MCC *instance;
+	MCC() : complex(0) {};
 	MCC(const MCC&) = delete;
 	void print(Func *f) { }
 };

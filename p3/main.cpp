@@ -58,7 +58,7 @@ int main(int argc, char * argv[]) {
   fclose(input_file);
   free_scanner();
   yylex_destroy();
-  fprintf(stdout, "%d\n", complexity); 
+  fprintf(stdout, "%d\n", MCC::getInstance()->getComplex()); 
   return (parse_had_errors ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
