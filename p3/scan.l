@@ -66,6 +66,8 @@ struct tok_state {
     int long_string_start_col ; /* Starting column for a multi-line string */
 };
 
+
+
 static struct tok_state *tok = NULL;
 
 static void display_error(const char *msg);
@@ -272,7 +274,7 @@ comment   #.*
 "yield"    { return YIELD; }
 
 {number}   { ++numbers; return NUMBER; }
-{name}     { ++identifiers; return NAME; }
+{name}     { ++identifiers; yylval.name = new char[yyleng+1]; strcpy(yylval.name, yytext); return NAME; }
 
 <<EOF>>    { handle_eof(); return ENDMARKER; }
 

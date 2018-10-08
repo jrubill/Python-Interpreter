@@ -7,13 +7,20 @@
 	int complexity;
 %}
 
+
+%union {
+    int number;
+    char *name;
+}
+
 // 83 tokens, in alphabetical order:
 %token AMPEREQUAL AMPERSAND AND AS ASSERT AT BACKQUOTE BAR BREAK CIRCUMFLEX
 %token CIRCUMFLEXEQUAL CLASS COLON COMMA CONTINUE DEDENT DEF DEL DOT DOUBLESLASH
 %token DOUBLESLASHEQUAL DOUBLESTAR DOUBLESTAREQUAL ELIF ELSE ENDMARKER EQEQUAL
 %token EQUAL EXCEPT EXEC FINALLY FOR FROM GLOBAL GREATER GREATEREQUAL GRLT
 %token IF IMPORT IN INDENT IS LAMBDA LBRACE LEFTSHIFT LEFTSHIFTEQUAL LESS
-%token LESSEQUAL LPAR LSQB MINEQUAL MINUS NAME NEWLINE NOT NOTEQUAL NUMBER
+%token LESSEQUAL LPAR LSQB MINEQUAL MINUS NEWLINE NOT NOTEQUAL NUMBER
+%token <name> NAME 
 %token OR PASS PERCENT PERCENTEQUAL PLUS PLUSEQUAL PRINT RAISE RBRACE RETURN
 %token RIGHTSHIFT RIGHTSHIFTEQUAL RPAR RSQB SEMI SLASH SLASHEQUAL STAR STAREQUAL
 %token STRING TILDE TRY VBAREQUAL WHILE WITH YIELD
@@ -21,6 +28,7 @@
 %start start
 
 %locations
+
 
 %%
 
@@ -56,8 +64,8 @@ decorated // Used in: compound_stmt
 	;
 funcdef // Used in: decorated, compound_stmt
 	: DEF NAME parameters COLON suite
-		{ //MCC::getInstance()->addFunc(std::string( $2 ), @1.first_line, @1.first_column );
-			std::cout << $1 << std::endl;
+		{ 
+			MCC::getInstance()->addFunc(std::string( $2 ), @1.first_line, @1.first_column );
 		}
 	;
 parameters // Used in: funcdef
