@@ -10,17 +10,15 @@ char Elem::getGrade() const {
     else return 'F';
 }
 
-
 std::ostream& operator<<(std::ostream &os, const Elem *e) {
 	os << "    ";
-	if (dynamic_cast<const Class *>(e)) os << "C ";
+    if (dynamic_cast<const Class *>(e)) os << "C ";
 	else {
 		if ( (static_cast<const Func *>(e))->isMethod()) os << "M ";
 		else os << "F ";
 	}
 		return os << e->line_no << ":" << e->col_no << " " << e->name << " - " << e->getGrade() << " (" << e->getComplexity() << ")";
 }
-
 
 /* Class */
 Func *Class::append(char *n, int line, int column) {
@@ -65,16 +63,18 @@ void MCC::incr(int col_no) {
 }
 
 void MCC::startClass(char *n, int line, int column) {
-    Class *new_class = new Class(n, line, column);
-    curr_class = new_class;
-    elem_list.push_back(new_class);
+    if (curr_class == nullptr) { 
+        Class *new_class = new Class(n, line, column);
+        curr_class = new_class;
+        elem_list.push_back(new_class);
+    }
 }
 
 void MCC::endClass() {
     if (curr_class != nullptr) { 
-    curr_class->setComplexity();
-    curr_class = nullptr;
-    curr_func = nullptr;
+        curr_class->setComplexity();
+        curr_class = nullptr;
+        curr_func = nullptr;
     }
 }
 

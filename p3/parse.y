@@ -4,6 +4,7 @@
 	int yylex (void);
 	extern char *yytext;
 	void yyerror (const char *);
+    bool dec = false;
 %}
 
 
@@ -54,17 +55,20 @@ opt_arglist // Used in: decorator, trailer
 	| %empty
 	;
 decorators // Used in: decorators, decorated
-	: decorators decorator
+	: decorators decorator 
 	| decorator
 	;
 decorated // Used in: compound_stmt
-	: decorators classdef
-	| decorators funcdef
+	: decorators classdef 
+	| decorators 
+        {dec = true;} 
+        funcdef 
 	;
 funcdef // Used in: decorated, compound_stmt
 	: DEF NAME parameters COLON 
 		{ 
-            MCC::getInstance()->addFunc($2, @1.first_line, @1.first_column - 1);
+            MCC::getInstance()->addFunc($2, (dec) ? @1.first_line - 1 : @1.first_line, @1.first_column - 1);
+            dec = false; 
         }
 		suite
 	;
@@ -271,19 +275,19 @@ exec_stmt // Used in: small_stmt
 	;
 assert_stmt // Used in: small_stmt
 	: ASSERT test COMMA test
-        { MCC::getInstance()->incr( @1.first_line ); }   
+        { MCC::getInstance()->incr( @1.first_column ); }   
 	
     | ASSERT test
 	;
 compound_stmt // Used in: stmt
-	: if_stmt { MCC::getInstance()->incr( @1.first_line ); } 
-	| while_stmt { MCC::getInstance()->incr( @1.first_line );  } 
-	| for_stmt { MCC::getInstance()->incr( @1.first_line );  }  
+	: if_stmt { MCC::getInstance()->incr( @1.first_column - 1); } 
+	| while_stmt { MCC::getInstance()->incr( @1.first_column - 1);  } 
+	| for_stmt { MCC::getInstance()->incr( @1.first_column - 1);  }  
 	| try_stmt
-	| with_stmt { MCC::getInstance()->incr( @1.first_line );  } 
+	| with_stmt { MCC::getInstance()->incr( @1.first_column -1);  } 
 	| funcdef
-	| classdef
-	| decorated
+	| classdef 
+	| decorated 
 	;
 if_stmt // Used in: compound_stmt
 	: IF test COLON suite star_ELIF ELSE COLON suite
@@ -560,13 +564,21 @@ pick_for_test // Used in: dictorsetmaker
 	;
 classdef // Used in: decorated, compound_stmt
 	: CLASS NAME LPAR opt_testlist RPAR COLON 
-		{ MCC::getInstance()->startClass($2, @1.first_line, @1.first_column);}
+		{ 
+            MCC::getInstance()->startClass($2, @1.first_line, @1.first_column - 1);
+        }
 	suite
-        { MCC::getInstance()->endClass(); }
+        { 
+            MCC::getInstance()->endClass(); 
+        }
 	| CLASS NAME COLON 
-		{ MCC::getInstance()->startClass($2, @1.first_line, @1.first_column);}
+		{ 
+            MCC::getInstance()->startClass($2, @1.first_line, @1.first_column - 1);
+        }
 	suite
-        { MCC::getInstance()->endClass(); }
+        { 
+        MCC::getInstance()->endClass(); 
+        }
 	;
 opt_testlist // Used in: classdef
 	: testlist
