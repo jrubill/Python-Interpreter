@@ -48,6 +48,8 @@ int main(int argc, char * argv[]) {
   FILE *input_file = stdin;
   if (argc > 1) { /* user-supplied filename */
     input_file = open_file(argv[1]);
+    std::cout << argv[1] << std::endl;
+  
   }
   init_scanner(input_file);
   yydebug = 0;  /* Change to 1 if you want debugging */
