@@ -36,10 +36,14 @@ Func *Class::append(char *n, int line, int column) {
 }
 
 void Class::setComplexity() {
-    functions.sort([](const Func *lhs, const Func *rhs) { 
-        return lhs->getComplexity() > rhs->getComplexity(); 
-    });
-    complexity = functions.front()->getComplexity();
+    auto func = [](const Func *lhs, const Func *rhs) { 
+        return lhs->getComplexity() < rhs->getComplexity(); 
+    };
+    functions.sort(func);
+    int avg = 0; 
+    for (const Func *f: functions)
+        avg += f->getComplexity();
+    complexity = avg / functions.size();
 }
 
 /* MCC */
@@ -71,6 +75,7 @@ void MCC::startClass(char *n, int line, int column) {
 void MCC::endClass() {
     curr_class->setComplexity();
     curr_class = nullptr;
+    curr_func = nullptr;
 }
 
 void MCC::addFunc(char *n, int line, int column) {

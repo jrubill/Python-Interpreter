@@ -271,14 +271,16 @@ exec_stmt // Used in: small_stmt
 	;
 assert_stmt // Used in: small_stmt
 	: ASSERT test COMMA test
-	| ASSERT test
+        { MCC::getInstance()->incr( @1.first_line ); }   
+	
+    | ASSERT test
 	;
 compound_stmt // Used in: stmt
 	: if_stmt { MCC::getInstance()->incr( @1.first_line ); } 
-	| while_stmt 
-	| for_stmt 
+	| while_stmt { MCC::getInstance()->incr( @1.first_line );  } 
+	| for_stmt { MCC::getInstance()->incr( @1.first_line );  }  
 	| try_stmt
-	| with_stmt
+	| with_stmt { MCC::getInstance()->incr( @1.first_line );  } 
 	| funcdef
 	| classdef
 	| decorated
@@ -289,6 +291,7 @@ if_stmt // Used in: compound_stmt
 	;
 star_ELIF // Used in: if_stmt, star_ELIF
 	: star_ELIF ELIF test COLON suite
+        { MCC::getInstance()->incr( @1.first_line ); }
 	| %empty
 	;
 while_stmt // Used in: compound_stmt
