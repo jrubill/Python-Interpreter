@@ -66,6 +66,7 @@ struct tok_state {
     int long_string_start_col ; /* Starting column for a multi-line string */
 };
 
+
 static struct tok_state *tok = NULL;
 
 static void display_error(const char *msg);
@@ -83,6 +84,13 @@ static int identifiers = 0;
 static int numbers = 0;
 
 %}
+
+%union{
+    int val;
+    char *name;
+}
+
+type <name>
 
 %option yylineno
 %option noyywrap
@@ -272,7 +280,10 @@ comment   #.*
 "yield"    { return YIELD; }
 
 {number}   { ++numbers; return NUMBER; }
-{name}     { ++identifiers; return NAME; }
+{name}     { ++identifiers; 
+                yylval.name = new char[yyleng + 1];
+                strcpy(yylval.name, yytext);
+                return NAME; }
 
 <<EOF>>    { handle_eof(); return ENDMARKER; }
 
