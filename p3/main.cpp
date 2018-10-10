@@ -32,6 +32,7 @@ extern void init_scanner(FILE *);
 int yylex_destroy();
 extern void free_scanner();
 
+
 static FILE * 
 open_file(const char *filename) {
   FILE *file = fopen(filename, "r");

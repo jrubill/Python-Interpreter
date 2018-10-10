@@ -4,14 +4,13 @@
 	int yylex (void);
 	extern char *yytext;
 	void yyerror (const char *);
-	MCC *instance = MCC::getInstance();
 %}
 
 
 %union {
     int number;
     char *name;
-}
+};
 
 // 83 tokens, in alphabetical order:
 %token AMPEREQUAL AMPERSAND AND AS ASSERT AT BACKQUOTE BAR BREAK CIRCUMFLEX
@@ -64,7 +63,9 @@ decorated // Used in: compound_stmt
 	;
 funcdef // Used in: decorated, compound_stmt
 	: DEF NAME parameters COLON 
-		{ std::cout << "name" << $2 << std::endl; }
+		{ std::cout << yylval.name << std::endl; 
+            MCC::getInstance()->addFunc(yylval.name, @1.first_line, @1.first_column);
+        }
 		suite
 	;
 parameters // Used in: funcdef
@@ -273,9 +274,9 @@ assert_stmt // Used in: small_stmt
 	| ASSERT test
 	;
 compound_stmt // Used in: stmt
-	: if_stmt { instance++; }
-	| while_stmt { instance++; }
-	| for_stmt { instance++; }
+	: if_stmt { MCC::getInstance()->incr(); }
+	| while_stmt { MCC::getInstance()->incr(); }
+	| for_stmt { MCC::getInstance()->incr(); }
 	| try_stmt
 	| with_stmt
 	| funcdef

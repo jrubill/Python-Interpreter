@@ -5,13 +5,18 @@
 #include <string>
 #include <stack>
 #include <algorithm>
+#include <string>
+#include <string.h>
 
 class Elem {
 public:
 	Elem(char *n, int l, int col) : complexity(1), line_no(l), 
 		col_no(col), name(new char[strlen(n)+1]) { strcpy(name, n); }
-	~Elem() { delete [] name; }
-	
+	Elem(const Elem &rhs) : complexity(rhs.complexity), line_no(rhs.line_no),
+        col_no(rhs.col_no), name(new char[strlen(rhs.name)+1]) { strcpy(name, rhs.name); }
+    virtual ~Elem() { delete [] name; }
+    Elem(Elem &&rhs) : complexity(rhs.complexity), line_no(rhs.line_no), col_no(rhs.col_no), 
+    name(nullptr) { std::swap(name, rhs.name); }	
 	int getComplexity() const { return complexity; }
 	virtual char getGrade();
 	
@@ -19,7 +24,7 @@ public:
 
 protected:
 	int complexity, line_no, col_no;
-	std::string name;
+    char *name;
 };
 
 class Func : public Elem {
@@ -42,10 +47,12 @@ private:
 
 class MCC {
 public:
-	static MCC *getInstance();
+    MCC() : elem_list(), curr_func(nullptr), curr_class(nullptr), inClass(false) {}
+	
+    static MCC *getInstance();
 	~MCC();
 	void addFunc(char*, int, int);
-	void operator++() { curr_func++; }
+	void incr() { curr_func++; }
 
 	void startClass(char*, int, int);
 	void endClass();
@@ -53,13 +60,12 @@ public:
 
 private:
 	// var
-	std::list<Elem*> elem_list;
+    std::list<Elem*> elem_list;
 	Func *curr_func;
 	Class *curr_class;
 	bool inClass;
 
 	// func
-	MCC() : elem_list(), curr_func(nullptr), curr_class(nullptr), inClass(false) {}
 	MCC(const MCC&) = delete;
 };
 

@@ -42,7 +42,7 @@ void Class::setComplexity() {
 /* MCC */
 
 MCC *MCC::getInstance() {
-    static MCC *instance;
+    static MCC *instance = nullptr; 
     if (!instance) instance = new MCC();
     return instance;
 }
@@ -67,14 +67,13 @@ void MCC::addFunc(char *n, int line, int column) {
     if (inClass) toAdd = curr_class->append(n, line, column);
     else toAdd = new Func(n, line, column);
     curr_func = toAdd;
-    elem_list.push_back(toAdd);
+    elem_list.emplace_back(toAdd);
 }
 
 void MCC::print() {
     elem_list.sort([](const Elem *lhs, const Elem *rhs) { 
         return lhs->getComplexity() > rhs->getComplexity(); 
     });
-    for (const Elem *l : elem_list)
-        std::cout << l << std::endl;
-        std::cout << std::endl;
+    for (const Elem *l : elem_list) std::cout << l << std::endl;
+    std::cout << std::endl;
 }
