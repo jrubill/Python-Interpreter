@@ -6,8 +6,8 @@ import fnmatch
 import subprocess
 import filecmp
 
-EXECUTABLE = os.path.join(os.getcwd(), 'run')
-LIB_FOLDER = os.path.join(os.getcwd(), '../Python-2.7.2/')
+EXECUTABLE = os.path.join(os.getcwd(), 'prog')
+LIB_FOLDER = os.path.join(os.getcwd(), 'cases/Lib/')
 
 
 class TestHarness:
