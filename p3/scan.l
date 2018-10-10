@@ -31,7 +31,7 @@
  */
 #include "stdbool.h"
 #include "parse.tab.h"
-
+#include <iostream>
 
 /* Code to handle locations */
 /* This is taken from Chapter 8 - flex & bison by John Levine */
@@ -277,7 +277,8 @@ comment   #.*
 {name}     { ++identifiers; 
                 yylval.name = new char[yyleng + 1];
                 strcpy(yylval.name, yytext);
-                return NAME; }
+                return NAME;
+            }
 
 <<EOF>>    { handle_eof(); return ENDMARKER; }
 

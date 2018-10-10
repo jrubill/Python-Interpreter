@@ -18,8 +18,8 @@ public:
     Elem(Elem &&rhs) : complexity(rhs.complexity), line_no(rhs.line_no), col_no(rhs.col_no), 
     name(nullptr) { std::swap(name, rhs.name); }	
 	int getComplexity() const { return complexity; }
-	virtual char getGrade();
-	
+	virtual char getGrade() const;
+    const int getLine() const { return line_no; }	
 	friend std::ostream& operator<<(std::ostream &os, const Elem *e);
 
 protected:
@@ -30,7 +30,7 @@ protected:
 class Func : public Elem {
 public:
 	Func(char *n, int l = 1, int col = 0, bool m = false) : Elem(n, l, col), method(m) {}
-	void operator++() { complexity++; }
+	void incr() { complexity++; }
 	bool isMethod() const { return (method) ? true : false; }
 private:
 	bool method;
@@ -47,13 +47,12 @@ private:
 
 class MCC {
 public:
-    MCC() : elem_list(), curr_func(nullptr), curr_class(nullptr), inClass(false) {}
+    MCC() : elem_list(), curr_func(nullptr), curr_class(nullptr) {}
 	
     static MCC *getInstance();
 	~MCC();
 	void addFunc(char*, int, int);
-	void incr() { curr_func++; }
-
+    void incr(int);
 	void startClass(char*, int, int);
 	void endClass();
 	void print();
@@ -63,7 +62,6 @@ private:
     std::list<Elem*> elem_list;
 	Func *curr_func;
 	Class *curr_class;
-	bool inClass;
 
 	// func
 	MCC(const MCC&) = delete;

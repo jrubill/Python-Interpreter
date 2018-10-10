@@ -1,14 +1,20 @@
 
 
 class cake:
-	def __init__(self):
-		pass
-	def f():
-		if x:
-			pass
+    def __init__(self):
+        pass
+
+    def f():
+        if x:
+            pass
 
 def func():
-	if 4: True
+    if 4:
+        pass
 
-if __name__=="__main__":
-	func()
+def potato():
+    pass
+
+
+#if __name__=="__main__":
+#    pass #func()

@@ -1,7 +1,7 @@
 #include "mcc.h"
 
 /* Elem */
-char Elem::getGrade() {
+char Elem::getGrade() const {
     if (complexity < 6 ) return 'A';
     else if (complexity < 11) return 'B';
     else if (complexity < 21) return 'C';
@@ -12,14 +12,17 @@ char Elem::getGrade() {
 
 
 std::ostream& operator<<(std::ostream &os, const Elem *e) {
-	os << "\t";
+	os << "    ";
 	if (dynamic_cast<const Class *>(e)) os << "C ";
 	else {
 		if ( (static_cast<const Func *>(e))->isMethod()) os << "M ";
 		else os << "F ";
 	}
-		return os << e->line_no << ":" << e->col_no << " " << e->name << " - (" << e->getComplexity() << ")";
+		return os << e->line_no << ":" << e->col_no << " " << e->name << " - " << e->getGrade() << " (" << e->getComplexity() << ")";
 }
+
+
+
 
 /* Class */
 Func *Class::append(char *n, int line, int column) {
@@ -51,6 +54,14 @@ MCC::~MCC() {
     while (!elem_list.empty()) delete elem_list.front(), elem_list.pop_front();
 }
 
+void MCC::incr(int line_no) {
+    if (curr_func != nullptr) {
+       if (curr_func->getLine() < line_no)
+           curr_func->incr();
+       else curr_func = nullptr;
+    } 
+}
+
 void MCC::startClass(char *n, int line, int column) {
     Class *new_class = new Class(n, line, column);
     curr_class = new_class;
@@ -64,7 +75,7 @@ void MCC::endClass() {
 
 void MCC::addFunc(char *n, int line, int column) {
     Func *toAdd;
-    if (inClass) toAdd = curr_class->append(n, line, column);
+    if (curr_class) toAdd = curr_class->append(n, line, column);
     else toAdd = new Func(n, line, column);
     curr_func = toAdd;
     elem_list.emplace_back(toAdd);
@@ -72,7 +83,12 @@ void MCC::addFunc(char *n, int line, int column) {
 
 void MCC::print() {
     elem_list.sort([](const Elem *lhs, const Elem *rhs) { 
-        return lhs->getComplexity() > rhs->getComplexity(); 
+        if (lhs->getComplexity() > rhs->getComplexity()) 
+            return true;
+            if (lhs->getComplexity() == rhs->getComplexity()) {
+                // Priority: F, C, M
+            }
+        return false;
     });
     for (const Elem *l : elem_list) std::cout << l << std::endl;
     std::cout << std::endl;

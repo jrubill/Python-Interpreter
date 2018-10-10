@@ -63,8 +63,8 @@ decorated // Used in: compound_stmt
 	;
 funcdef // Used in: decorated, compound_stmt
 	: DEF NAME parameters COLON 
-		{ std::cout << yylval.name << std::endl; 
-            MCC::getInstance()->addFunc(yylval.name, @1.first_line, @1.first_column);
+		{ 
+            MCC::getInstance()->addFunc($2, @1.first_line, @1.first_column - 1);
         }
 		suite
 	;
@@ -274,9 +274,9 @@ assert_stmt // Used in: small_stmt
 	| ASSERT test
 	;
 compound_stmt // Used in: stmt
-	: if_stmt { MCC::getInstance()->incr(); }
-	| while_stmt { MCC::getInstance()->incr(); }
-	| for_stmt { MCC::getInstance()->incr(); }
+	: if_stmt { MCC::getInstance()->incr( @1.first_line ); } 
+	| while_stmt 
+	| for_stmt 
 	| try_stmt
 	| with_stmt
 	| funcdef
@@ -285,7 +285,7 @@ compound_stmt // Used in: stmt
 	;
 if_stmt // Used in: compound_stmt
 	: IF test COLON suite star_ELIF ELSE COLON suite
-	| IF test COLON suite star_ELIF
+	| IF test COLON suite star_ELIF 
 	;
 star_ELIF // Used in: if_stmt, star_ELIF
 	: star_ELIF ELIF test COLON suite
@@ -555,11 +555,13 @@ pick_for_test // Used in: dictorsetmaker
 	;
 classdef // Used in: decorated, compound_stmt
 	: CLASS NAME LPAR opt_testlist RPAR COLON 
-		{ /* semantic action */}
+		{ MCC::getInstance()->startClass($2, @1.first_line, @1.first_column);}
 	suite
+        { MCC::getInstance()->endClass(); }
 	| CLASS NAME COLON 
-		{ /* semantic action */ }
+		{ MCC::getInstance()->startClass($2, @1.first_line, @1.first_column);}
 	suite
+        { MCC::getInstance()->endClass(); }
 	;
 opt_testlist // Used in: classdef
 	: testlist
