@@ -29,7 +29,6 @@
 #include "parse.tab.h"
 #include "mcc.h"
 extern void init_scanner(FILE *);
-extern int complexity;
 int yylex_destroy();
 extern void free_scanner();
 
@@ -58,7 +57,7 @@ int main(int argc, char * argv[]) {
   fclose(input_file);
   free_scanner();
   yylex_destroy();
-  fprintf(stdout, "%d\n", complexity); 
+  MCC::getInstance()->print();
   return (parse_had_errors ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
