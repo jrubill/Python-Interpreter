@@ -309,6 +309,7 @@ try_stmt // Used in: compound_stmt
 plus_except // Used in: try_stmt, plus_except
 	: plus_except except_clause COLON suite
 	| except_clause COLON suite
+        { MCC::getInstance()->incr( @1.first_column ); }
 	;
 opt_ELSE // Used in: try_stmt
 	: ELSE COLON suite
@@ -332,6 +333,7 @@ with_item // Used in: with_stmt, star_COMMA_with_item
 except_clause // Used in: plus_except
 	: EXCEPT test opt_AS_COMMA
 	| EXCEPT
+        { MCC::getInstance()->incr( @1.first_column ); }
 	;
 pick_AS_COMMA // Used in: opt_AS_COMMA
 	: AS
@@ -374,13 +376,13 @@ opt_IF_ELSE // Used in: test
 	| %empty
 	;
 or_test // Used in: old_test, test, opt_IF_ELSE, or_test, comp_for
-	: and_test
-	| or_test OR and_test
+	: and_test 
+	| or_test OR and_test { MCC::getInstance()->incr( @1.first_column ); } 
 	;
 and_test // Used in: or_test, and_test
 	: not_test
-	| and_test AND not_test
-	;
+	| and_test AND not_test { MCC::getInstance()->incr( @1.first_column ); } 
+    ;
 not_test // Used in: and_test, not_test
 	: NOT not_test
 	| comparison
@@ -599,12 +601,13 @@ opt_comp_for // Used in: argument
 	| %empty
 	;
 list_iter // Used in: list_for, list_if
-	: list_for
+	: list_for 
 	| list_if
 	;
 list_for // Used in: listmaker, list_iter
 	: FOR exprlist IN testlist_safe list_iter
 	| FOR exprlist IN testlist_safe
+   {MCC::getInstance()->incr( @1.first_column );} 
 	;
 list_if // Used in: list_iter
 	: IF old_test list_iter

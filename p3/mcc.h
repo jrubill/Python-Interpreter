@@ -19,7 +19,7 @@ public:
     name(nullptr) { std::swap(name, rhs.name); }	
 	int getComplexity() const { return complexity; }
 	virtual char getGrade() const;
-    const int getLine() const { return line_no; }	
+    const int getCol() const { return col_no; }	
 	friend std::ostream& operator<<(std::ostream &os, const Elem *e);
 
 protected:

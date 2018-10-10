@@ -22,8 +22,6 @@ std::ostream& operator<<(std::ostream &os, const Elem *e) {
 }
 
 
-
-
 /* Class */
 Func *Class::append(char *n, int line, int column) {
     char *new_name = new char[strlen(n) + strlen(name) + 2];
@@ -58,9 +56,9 @@ MCC::~MCC() {
     while (!elem_list.empty()) delete elem_list.front(), elem_list.pop_front();
 }
 
-void MCC::incr(int line_no) {
+void MCC::incr(int col_no) {
     if (curr_func != nullptr) {
-       if (curr_func->getLine() < line_no)
+       if (curr_func->getCol() < col_no)
            curr_func->incr();
        else curr_func = nullptr;
     } 
