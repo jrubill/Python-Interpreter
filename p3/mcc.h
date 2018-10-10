@@ -19,7 +19,7 @@ public:
 
 protected:
 	int complexity, line_no, col_no;
-	char *name;
+	std::string name;
 };
 
 class Func : public Elem {

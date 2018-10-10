@@ -67,6 +67,10 @@ struct tok_state {
 };
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7ec3f98d61649fcab8b45df4dc5781f6c33d4e21
 static struct tok_state *tok = NULL;
 
 static void display_error(const char *msg);
