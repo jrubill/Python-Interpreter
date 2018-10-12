@@ -36,7 +36,13 @@
 /* Code to handle locations */
 /* This is taken from Chapter 8 - flex & bison by John Levine */
 int yycolumn = 1;
-
+struct Node {
+    Node(char *n, Node *nxt = nullptr) : name(n), next(nxt) {} 
+    ~Node() {delete [] name ;}
+    char *name;
+    Node *next;
+};
+Node *head = nullptr;
 #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno; \
     yylloc.first_column = yycolumn; yylloc.last_column = yycolumn+yyleng-1; \
     yycolumn += yyleng;
@@ -276,11 +282,20 @@ comment   #.*
 {number}   { ++numbers; return NUMBER; }
 {name}     { ++identifiers; 
                 yylval.name = new char[yyleng + 1];
+                head = new Node(yylval.name, head); 
                 strcpy(yylval.name, yytext);
                 return NAME;
             }
 
-<<EOF>>    { handle_eof(); return ENDMARKER; }
+<<EOF>>    { handle_eof(); 
+            Node *temp = head;
+            while (head != nullptr) {
+                head = head->next;
+                delete temp;
+                temp = head;
+            }
+            delete temp;
+            return ENDMARKER; }
 
 <*>.       { display_error("unknown character"); }
 

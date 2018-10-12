@@ -32,7 +32,6 @@ extern void init_scanner(FILE *);
 int yylex_destroy();
 extern void free_scanner();
 
-
 static FILE * 
 open_file(const char *filename) {
   FILE *file = fopen(filename, "r");
@@ -61,6 +60,7 @@ int main(int argc, char * argv[]) {
   free_scanner();
   yylex_destroy();
   MCC::getInstance()->print();
+  delete MCC::getInstance();
   return (parse_had_errors ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
