@@ -47,7 +47,7 @@ for x in files:
             print "\ttestcase:", x, "FAILED"
             f.write("errors for {}\n----".format(python_file_to_parse))
             f.write(subprocess.Popen(["./script.sh", python_file_to_parse], stdout=PIPE, stderr=PIPE).communicate()[0])
-            f.write("\n--------\n\n")
+            f.write("\n---END-----\n\n")
             failed += 1
         else:
             print "testcase:", x, "passed"
