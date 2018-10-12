@@ -68,7 +68,8 @@ funcdef // Used in: decorated, compound_stmt
 	: DEF NAME parameters COLON 
 		{ 
             MCC::getInstance()->addFunc($2, (dec) ? @1.first_line - 1 : @1.first_line, @1.first_column - 1);
-            dec = false; 
+            dec = false;
+            delete [] $2;
         }
 		suite
 	;
@@ -566,6 +567,7 @@ classdef // Used in: decorated, compound_stmt
 	: CLASS NAME LPAR opt_testlist RPAR COLON 
 		{ 
             MCC::getInstance()->startClass($2, @1.first_line, @1.first_column - 1);
+            delete [] $2; 
         }
 	suite
         { 
@@ -574,6 +576,7 @@ classdef // Used in: decorated, compound_stmt
 	| CLASS NAME COLON 
 		{ 
             MCC::getInstance()->startClass($2, @1.first_line, @1.first_column - 1);
+            delete [] $2; 
         }
 	suite
         { 

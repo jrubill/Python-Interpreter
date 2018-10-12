@@ -1,5 +1,4 @@
 #include "mcc.h"
-
 /* Elem */
 char Elem::getGrade() const {
     if (complexity < 6 ) return 'A';
@@ -27,6 +26,7 @@ Func *Class::append(char *n, int line, int column) {
     strcat(new_name, ".");
     strcat(new_name, n);
     Func *toAdd = new Func(new_name, line, column, true);
+    delete [] new_name;
     functions.push_back(toAdd);
     return toAdd;
 }
@@ -89,14 +89,11 @@ void MCC::addFunc(char *n, int line, int column) {
 void MCC::print() {
     elem_list.sort([](const Elem *lhs, const Elem *rhs) { 
         if (lhs->getComplexity() > rhs->getComplexity()) return true;
-            if (lhs->getComplexity() == rhs->getComplexity()) {
-                // Priority: F, C, M
-                if (dynamic_cast<const Func*>(lhs)) // Prefer Functions over Methods
-                    if (!static_cast<const Func*>(lhs)->isMethod()) return true;
-                if (dynamic_cast<const Class*>(rhs)) 
-                    if (dynamic_cast<const Func*>(rhs))
-                        if (static_cast<const Func*>(rhs)->isMethod()) return true;
-            }
+        int lhsType = lhs->getType();
+        int rhsType = rhs->getType();
+        
+        if (lhsType > rhsType) return true;
+        if (lhs->getLine() < rhs->getLine()) return true;
         return false;
     });
     for (const Elem *l : elem_list) std::cout << l << std::endl;

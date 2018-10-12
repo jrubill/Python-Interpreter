@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 
 import os, sys
 import fnmatch
@@ -6,7 +6,7 @@ import subprocess
 from subprocess import PIPE
 import filecmp
 import locale
-
+import shlex
 __encoding = locale.getdefaultlocale()[1]
 
 
@@ -15,7 +15,7 @@ def testCode( retcode, msg ):
         print msg
         sys.exit( 1 )
 
-testDir = os.path.join( os.getcwd(), 'cases/Lib')
+testDir = os.path.join( os.getcwd(), 'cases/')
 if not os.path.isdir( testDir ):
     print testDir, "isn't a directory"
     sys.exit( 1 )

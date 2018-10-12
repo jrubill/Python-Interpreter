@@ -8,6 +8,10 @@
 #include <string>
 #include <string.h>
 
+const int __FUNC = 2;
+const int __CLASS = 1;
+const int __METHOD = 0;
+
 class Elem {
 public:
 	Elem(char *n, int l, int col) : complexity(1), line_no(l), 
@@ -17,10 +21,14 @@ public:
     virtual ~Elem() { delete [] name; }
     Elem(Elem &&rhs) : complexity(rhs.complexity), line_no(rhs.line_no), col_no(rhs.col_no), 
     name(nullptr) { std::swap(name, rhs.name); }	
-	int getComplexity() const { return complexity; }
+	
+    int getComplexity() const { return complexity; }
 	virtual char getGrade() const;
+   
+    virtual int getType() const = 0;
     const int getCol() const { return col_no; }	
-	friend std::ostream& operator<<(std::ostream &os, const Elem *e);
+    const int getLine() const { return line_no; }	
+    friend std::ostream& operator<<(std::ostream &os, const Elem *e);
 
 protected:
 	int complexity, line_no, col_no;
@@ -32,6 +40,7 @@ public:
 	Func(char *n, int l = 1, int col = 0, bool m = false) : Elem(n, l, col), method(m) {}
 	void incr() { complexity++; }
 	bool isMethod() const { return (method) ? true : false; }
+    int getType() const { return (method) ? __METHOD : __FUNC; }
 private:
 	bool method;
 };
@@ -39,8 +48,10 @@ private:
 class Class : public Elem {
 public:
 	Class(char *n, int l = 1, int col = 0) : Elem(n, l, col), functions() {}
-	Func *append(char *name, int line_no, int col_no);
+    Func *append(char *name, int line_no, int col_no);
 	void setComplexity();
+
+    int getType() const { return __CLASS; }
 private:
 	std::list<Func *> functions;
 };
