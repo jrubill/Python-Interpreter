@@ -24,6 +24,9 @@ executable = os.path.join(os.getcwd(), "prog")
 if not os.path.isfile( executable ):
     retcode = subprocess.call("make",shell=True)
     testCode( retcode, "\tFAILED to make the scanner" )
+with open("errors.dat", "w") as f:
+    f.write("Error Log:\n")
+f = open("errors.dat", "a")
 
 files = os.listdir( testDir )
 passed = 0
@@ -42,9 +45,13 @@ for x in files:
 
         if our_output != mccabe_output:
             print "\ttestcase:", x, "FAILED"
+            f.write("errors for {}\n----".format(python_file_to_parse))
+            f.write(subprocess.Popen(["./script.sh", python_file_to_parse], stdout=PIPE, stderr=PIPE).communicate()[0])
+            f.write("\n--------\n\n")
             failed += 1
         else:
             print "testcase:", x, "passed"
             passed += 1
 print passed, "test cases passed"
 print failed, "test cases failed"
+f.close()
