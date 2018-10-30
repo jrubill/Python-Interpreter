@@ -25,7 +25,7 @@
 %token DOUBLESLASHEQUAL DOUBLESTAR DOUBLESTAREQUAL ELIF ELSE ENDMARKER EQEQUAL
 %token EQUAL EXCEPT EXEC FINALLY FOR FROM GLOBAL GREATER GREATEREQUAL GRLT
 %token IF IMPORT IN INDENT IS LAMBDA LBRACE LEFTSHIFT LEFTSHIFTEQUAL LESS
-%token LESSEQUAL LPAR LSQB MINEQUAL MINUS NAME NEWLINE NOT NOTEQUAL NUMBER
+%token LESSEQUAL LPAR LSQB MINEQUAL MINUS NAME NEWLINE NOT NOTEQUAL FLOAT_NUM INT_NUM 
 %token OR PASS PERCENT PERCENTEQUAL PLUS PLUSEQUAL PRINT RAISE RBRACE RETURN
 %token RIGHTSHIFT RIGHTSHIFTEQUAL RPAR RSQB SEMI SLASH SLASHEQUAL STAR STAREQUAL
 %token STRING TILDE TRY VBAREQUAL WHILE WITH YIELD
@@ -33,6 +33,8 @@
 %type<intNumber> NUMBER MINUS PLUS TILDE pick_unop
 %type<intNumber> pick_PLUS_MINUS
 %type<intNumber> pick_multop  
+%type<intNumber> INT_NUM
+%type<fltNumber> FLOAT_NUM
 %type<node> atom arith_expr test factor and_test
 %type<node> opt_test term lambdef not_test and_expr
 %type<node> power or_test comparison expr xor_expr
@@ -456,6 +458,16 @@ term // Used in: arith_expr, term
 			$$ = new MulBinaryNode($1, $3);
 			pool.add($$);
 		}
+		else if ($2 == SLASH) {
+			$$ = new DivBinaryNode($1, $3);
+			pool.add($$);
+		}
+		else if ($2 == PERCENT) {
+			// mod operator	
+		}
+		else {
+			// integer division
+		}
 	}
 	;
 pick_multop // Used in: term
@@ -487,7 +499,8 @@ atom // Used in: power
 	| LBRACE opt_dictorsetmaker RBRACE
 	| BACKQUOTE testlist1 BACKQUOTE
 	| NAME
-	| NUMBER { $$ = new IntLiteral($1); pool.add($$);  }
+	| INT_NUM { $$ = new IntLiteral($1); pool.add($$);  } 
+	| FLOAT_NUM { $$ = new FloatLiteral($1); pool.add($$);  } 
 	| plus_STRING
 	;
 pick_yield_expr_testlist_comp // Used in: opt_yield_test

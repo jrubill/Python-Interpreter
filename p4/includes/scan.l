@@ -271,8 +271,8 @@ comment   #.*
 "with"     { return WITH; }
 "yield"    { return YIELD; }
 
-{number_int}   { ++numbers; yylval.intNumber = atoi(yytext); return NUMBER; }
-{number_float} { ++numbers; yylval.fltNumber = atof(yytext); return NUMBER; }
+{number_int}   { ++numbers; yylval.intNumber = atoi(yytext); return INT_NUM; }
+{number_float} { ++numbers; yylval.fltNumber = atof(yytext); return FLOAT_NUM; }
 {name}     { ++identifiers; return NAME; }
 
 <<EOF>>    { handle_eof(); return ENDMARKER; }
