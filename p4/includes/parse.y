@@ -464,6 +464,8 @@ term // Used in: arith_expr, term
 		}
 		else if ($2 == PERCENT) {
 			// mod operator	
+			$$ = new ModBinaryNode($1, $3);
+			pool.add($$);
 		}
 		else {
 			// integer division

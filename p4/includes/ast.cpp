@@ -68,3 +68,9 @@ const Literal* DivBinaryNode::eval() const {
   return ((*x)/(*y));
 }
 
+const Literal *ModBinaryNode::eval() const {
+	if (!left || !right) throw std::string("error");
+	const Literal *x = left->eval();
+	const Literal *y = right->eval();
+	return ((*x) % (*y));
+}

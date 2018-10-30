@@ -65,3 +65,8 @@ public:
   virtual const Literal* eval() const;
 };
 
+class ModBinaryNode : public BinaryNode {
+public:
+	ModBinaryNode(Node *left, Node *right) : BinaryNode(left, right) {}
+	virtual const Literal *eval() const;
+};

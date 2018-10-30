@@ -21,7 +21,7 @@ public:
   virtual const Literal* opDiv(float) const =0;
   virtual const Literal* opDiv(int) const =0;
 
-  virtual const Literal* opMod(const Literal& rhs) const = 0;
+  virtual const Literal* operator%(const Literal& rhs) const = 0;
   virtual const Literal* opMod(float) const = 0;
   virtual const Literal* opMod(int) const = 0;
 
@@ -92,16 +92,19 @@ public:
     PoolOfNodes::getInstance().add(node);
     return node;
   }
-  virtual const Literal* opMod(const Literal& rhs) const {
+  virtual const Literal* operator%(const Literal& rhs) const {
   	return rhs.opMod(val);
   } 
   virtual const Literal* opMod(float lhs) const {
- 	const Literal *node = new FloatLiteral(lhs % val);
+ 	const Literal *node = new FloatLiteral(static_cast<int>(lhs) % static_cast<int>(val));
 	PoolOfNodes::getInstance().add(node);
-  } 
+  	return node;
+  }
+
   virtual const Literal* opMod(int lhs) const {
- 	const Literal *node = new FloatLiteral(lhs % val);
+ 	const Literal *node = new FloatLiteral(lhs % static_cast<int>(val));
 	PoolOfNodes::getInstance().add(node);
+  	return node;
   } 
   virtual const Literal* eval() const { return this; }
   virtual void print() const { 
@@ -173,17 +176,19 @@ public:
     return node;
   }
 
-  virtual const Literal* opMod(const Literal& rhs) const {
+  virtual const Literal* operator%(const Literal& rhs) const {
   	return rhs.opMod(val);
   } 
-  virtual const Literal* opMod(float lh) const {
- 	const Literal *node = new FloatLiteral(lhs % val);
+  virtual const Literal* opMod(float lhs) const {
+ 	const Literal *node = new FloatLiteral(static_cast<int>(lhs) % static_cast<int>(val));
 	PoolOfNodes::getInstance().add(node);
+ 	return node; 
   } 
   virtual const Literal* opMod(int lhs) const {
  	const Literal *node = new IntLiteral(lhs % val);
 	PoolOfNodes::getInstance().add(node);
-  } 
+ 	return node;
+ } 
 
 
 
