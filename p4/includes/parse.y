@@ -32,6 +32,7 @@
 
 %type<intNumber> NUMBER MINUS PLUS TILDE pick_unop
 %type<intNumber> pick_PLUS_MINUS
+%type<intNumber> pick_multop  
 %type<node> atom arith_expr test factor and_test
 %type<node> opt_test term lambdef not_test and_expr
 %type<node> power or_test comparison expr xor_expr
@@ -168,7 +169,7 @@ augassign // Used in: expr_stmt
 	| DOUBLESLASHEQUAL
 	;
 print_stmt // Used in: small_stmt
-	: PRINT opt_test
+	: PRINT opt_test { $2->eval()->print(); }
 	| PRINT RIGHTSHIFT test opt_test_2
 	;
 star_COMMA_test // Used in: star_COMMA_test, opt_test, listmaker, testlist_comp, testlist, pick_for_test
@@ -450,13 +451,18 @@ pick_PLUS_MINUS // Used in: arith_expr
 	;
 term // Used in: arith_expr, term
 	: factor
-	| term pick_multop factor
+	| term pick_multop factor {
+		if ($2 == STAR) {
+			$$ = new MulBinaryNode($1, $3);
+			pool.add($$);
+		}
+	}
 	;
 pick_multop // Used in: term
-	: STAR
-	| SLASH
-	| PERCENT
-	| DOUBLESLASH
+	: STAR 			{ $$ = STAR; }
+	| SLASH			{ $$ = SLASH; }
+	| PERCENT		{ $$ = PERCENT; }
+	| DOUBLESLASH   { $$ = DOUBLESLASH; }
 	;
 factor // Used in: term, factor, power
 	: pick_unop factor
