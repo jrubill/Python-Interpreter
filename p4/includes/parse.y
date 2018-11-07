@@ -3,12 +3,13 @@
     #include "includes/ast.h"
     #include <map> 
     #include "parse.tab.h" 
-
+    #include "includes/symbolTable.h"
     int yylex (void);
 	extern char *yytext;
 	void yyerror (const char *);
    
     PoolOfNodes& pool = PoolOfNodes::getInstance();
+	SymbolTable& s_table = SymbolTable::getInstance();
 %}
 
 %union {
@@ -38,7 +39,9 @@
 %type<node> atom arith_expr test factor and_test
 %type<node> opt_test term lambdef not_test and_expr
 %type<node> power or_test comparison expr xor_expr
-%type<node> shift_expr
+%type<node> shift_expr star_EQUAL expr_stmt testlist
+%type<node> pick_yield_expr_testlist
+%type<id> NAME
 
 
 
@@ -145,16 +148,28 @@ small_stmt // Used in: simple_stmt, star_SEMI_small_stmt
 	| assert_stmt
 	;
 expr_stmt // Used in: small_stmt
-	: testlist augassign pick_yield_expr_testlist
-	| testlist star_EQUAL
+	: testlist augassign pick_yield_expr_testlist 
+	| testlist star_EQUAL {
+		if ($2 != 0) {
+			$$ = new AsgBinaryNode($1, $2);
+			pool.add($$);
+		}
+	}
 	;
 pick_yield_expr_testlist // Used in: expr_stmt, star_EQUAL
 	: yield_expr
 	| testlist
 	;
 star_EQUAL // Used in: expr_stmt, star_EQUAL
-	: star_EQUAL EQUAL pick_yield_expr_testlist
+	: star_EQUAL EQUAL pick_yield_expr_testlist {
+		if ($1 == 0) $$ = $3;
+		if ($1 != 0 && $3 != 0) {
+			$$ = new AsgBinaryNode($1, $3);
+			pool.add($$);
+			}
+		}
 	| %empty
+	{$$ = 0; }
 	;
 augassign // Used in: expr_stmt
 	: PLUSEQUAL
@@ -479,7 +494,11 @@ pick_multop // Used in: term
 	| DOUBLESLASH   { $$ = DOUBLESLASH; }
 	;
 factor // Used in: term, factor, power
-	: pick_unop factor
+	: pick_unop factor {
+		if ($1 == MINUS) {
+			$2->flip();
+		}
+	}
 	| power
 	;
 pick_unop // Used in: factor
@@ -500,10 +519,10 @@ atom // Used in: power
 	| LSQB opt_listmaker RSQB
 	| LBRACE opt_dictorsetmaker RBRACE
 	| BACKQUOTE testlist1 BACKQUOTE
-	| NAME
-	| INT_NUM { $$ = new IntLiteral($1); pool.add($$);  } 
-	| FLOAT_NUM { $$ = new FloatLiteral($1); pool.add($$);  } 
-	| plus_STRING
+	| NAME			{ $$ = new IdentNode($1);    pool.add($$);  }
+	| INT_NUM   	{ $$ = new IntLiteral($1);   pool.add($$);  }
+	| FLOAT_NUM 	{ $$ = new FloatLiteral($1); pool.add($$);  }
+	| plus_STRING	{ ; }
 	;
 pick_yield_expr_testlist_comp // Used in: opt_yield_test
 	: yield_expr

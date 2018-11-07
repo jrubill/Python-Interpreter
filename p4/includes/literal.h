@@ -106,6 +106,7 @@ public:
 	PoolOfNodes::getInstance().add(node);
   	return node;
   } 
+
   virtual const Literal* eval() const { return this; }
   virtual void print() const { 
     std::cout << "FLOAT: " << val << std::endl; 
@@ -189,9 +190,6 @@ public:
 	PoolOfNodes::getInstance().add(node);
  	return node;
  } 
-
-
-
 
   virtual const Literal* eval() const { return this; }
   virtual void print() const { 

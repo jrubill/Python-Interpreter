@@ -273,7 +273,7 @@ comment   #.*
 
 {number_int}   { ++numbers; yylval.intNumber = atoi(yytext); return INT_NUM; }
 {number_float} { ++numbers; yylval.fltNumber = atof(yytext); return FLOAT_NUM; }
-{name}     { ++identifiers; return NAME; }
+{name}     { ++identifiers; yylval.id = new char[yyleng+1]; strcpy(yylval.id, yytext); return NAME; }
 
 <<EOF>>    { handle_eof(); return ENDMARKER; }
 
