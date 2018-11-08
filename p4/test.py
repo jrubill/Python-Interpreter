@@ -15,7 +15,7 @@ if not os.path.isdir( testDir ):
   print testDir, "isn't a directory"
   sys.exit( 1 )
 
-executable = os.path.join(os.getcwd(), "run")
+executable = os.path.join(os.getcwd(), "prog")
 if not os.path.isfile( executable ):
   retcode = subprocess.call("make",shell=True)
   testCode( retcode, "\tFAILED to make the scanner" )
@@ -24,9 +24,10 @@ files = os.listdir( testDir )
 for x in files:
   if fnmatch.fnmatch(x, "*.py"):
     testcase = os.path.join(testDir, x)
-    retcode = subprocess.call("./run < "+testcase+"> /tmp/out",shell=True)
+    # retcode = subprocess.call("./prog < "+testcase+"> /tmp/out",shell=True)
+    retcode = subprocess.call(executable +" < "+testcase+"> /tmp/out",shell=True)
     if retcode != 0:
-      testCode( retcode, "\tFAILED to run test case "+x)
+	  testCode( retcode, "\tFAILED to run test case "+x)
     else:
       output = testcase[:-3]+".out"
       if not os.path.isfile( output ):

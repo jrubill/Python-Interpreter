@@ -35,6 +35,14 @@ protected:
   Node *right;
 };
 
+class UnaryNode : public Node {
+public:
+	UnaryNode(Node *_val) : val(_val) {}
+	virtual const Literal *eval() const;
+private:
+	Node *val;
+};
+
 class AsgBinaryNode : public BinaryNode {
 public:
   AsgBinaryNode(Node* left, Node* right);
@@ -68,5 +76,17 @@ public:
 class ModBinaryNode : public BinaryNode {
 public:
 	ModBinaryNode(Node *left, Node *right) : BinaryNode(left, right) {}
+	virtual const Literal *eval() const;
+};
+
+class IntDivBinaryNode : public BinaryNode {
+public:
+	IntDivBinaryNode(Node *left, Node *right) : BinaryNode(left, right) {}
+	virtual const Literal *eval() const;
+};
+
+class PowBinaryNode : public BinaryNode {
+public:
+	PowBinaryNode(Node *left, Node *right) : BinaryNode(left, right) {}
 	virtual const Literal *eval() const;
 };

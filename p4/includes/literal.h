@@ -1,6 +1,6 @@
 #include "node.h"
 #include "poolOfNodes.h"
-
+#include <cmath>
 class Literal : public Node {
 public:
   virtual ~Literal() {}
@@ -24,6 +24,16 @@ public:
   virtual const Literal* operator%(const Literal& rhs) const = 0;
   virtual const Literal* opMod(float) const = 0;
   virtual const Literal* opMod(int) const = 0;
+  
+  virtual const Literal* IntDiv(const Literal& rhs) const = 0;
+  virtual const Literal* opIntDiv(float) const = 0;
+  virtual const Literal* opIntDiv(int) const = 0;
+  
+  virtual const Literal* Power(const Literal &rhs) const = 0;
+  virtual const Literal* opPow(float) const = 0;
+  virtual const Literal* opPow(int) const = 0;
+
+  virtual const Literal* flip() const = 0;
 
   virtual const Literal* eval() const = 0;
   virtual void print() const { 
@@ -106,6 +116,42 @@ public:
 	PoolOfNodes::getInstance().add(node);
   	return node;
   } 
+ virtual const Literal* IntDiv(const Literal &rhs) const {
+	return rhs.opIntDiv(val);
+}
+
+virtual const Literal* opIntDiv(int lhs) const {
+	const Literal *node = new FloatLiteral(lhs / static_cast<int>(val));
+	PoolOfNodes::getInstance().add(node);
+	return node;
+}
+virtual const Literal* opIntDiv(float lhs) const {
+	const Literal *node = new FloatLiteral(static_cast<int>(lhs) / static_cast<int>(val));
+	PoolOfNodes::getInstance().add(node);
+	return node;
+}
+
+virtual const Literal* Power(const Literal &rhs) const {
+	return rhs.opPow(val);
+}
+
+virtual const Literal* opPow(int lhs) const {
+	const Literal *node = new FloatLiteral(std::pow(lhs, val));
+	PoolOfNodes::getInstance().add(node);
+	return node;
+}
+virtual const Literal* opPow(float lhs) const {
+	const Literal *node = new FloatLiteral(std::pow(lhs, val));
+	PoolOfNodes::getInstance().add(node);
+	return node;
+}
+
+
+virtual const Literal* flip() const { 
+	const Literal *node = new FloatLiteral(val * -1);
+	PoolOfNodes::getInstance().add(node);
+	return node;
+}
 
   virtual const Literal* eval() const { return this; }
   virtual void print() const { 
@@ -189,8 +235,42 @@ public:
  	const Literal *node = new IntLiteral(lhs % val);
 	PoolOfNodes::getInstance().add(node);
  	return node;
- } 
+ }
+ 
+ virtual const Literal* IntDiv(const Literal& rhs) const {
+	return rhs.opIntDiv(val);	
+ }
 
+virtual const Literal* opIntDiv(int lhs) const {
+	const Literal *node = new FloatLiteral(lhs / static_cast<int>(val));
+	PoolOfNodes::getInstance().add(node);
+	return node;
+}
+virtual const Literal* opIntDiv(float lhs) const {
+	const Literal *node = new FloatLiteral(static_cast<int>(lhs) / static_cast<int>(val));
+	PoolOfNodes::getInstance().add(node);
+	return node;
+}
+
+virtual const Literal* Power(const Literal &rhs) const {
+	return rhs.opPow(val);
+}
+
+virtual const Literal* opPow(int lhs) const {
+	const Literal *node = new FloatLiteral(std::pow(lhs, val));
+	PoolOfNodes::getInstance().add(node);
+	return node;
+}
+virtual const Literal* opPow(float lhs) const {
+	const Literal *node = new FloatLiteral(std::pow(lhs, val));
+	PoolOfNodes::getInstance().add(node);
+	return node;
+}
+virtual const Literal* flip() const { 
+	const Literal *node = new IntLiteral(val * -1);
+	PoolOfNodes::getInstance().add(node);
+	return node;
+}
   virtual const Literal* eval() const { return this; }
   virtual void print() const { 
     std::cout << "INT: " << val << std::endl; 

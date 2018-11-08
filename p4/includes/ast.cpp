@@ -32,6 +32,11 @@ const Literal* AsgBinaryNode::eval() const {
   return res;
 }
 
+const Literal* UnaryNode::eval() const {
+	const Literal *res = val->eval()->flip();
+	return res;
+}
+
 const Literal* AddBinaryNode::eval() const { 
   if (!left || !right) {
     throw std::string("error");
@@ -73,4 +78,17 @@ const Literal *ModBinaryNode::eval() const {
 	const Literal *x = left->eval();
 	const Literal *y = right->eval();
 	return ((*x) % (*y));
+}
+
+const Literal *IntDivBinaryNode::eval() const {
+	if (!left || !right) throw std::string("error");
+	const Literal *x = left->eval();
+	const Literal *y = right->eval();
+	return ((*x).IntDiv(*y));
+}
+
+const Literal *PowBinaryNode::eval() const {
+	const Literal *x = left->eval();
+	const Literal *y = right->eval();
+	return ((*x).Power(*y));
 }

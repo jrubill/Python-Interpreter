@@ -31,7 +31,11 @@
 %token RIGHTSHIFT RIGHTSHIFTEQUAL RPAR RSQB SEMI SLASH SLASHEQUAL STAR STAREQUAL
 %token STRING TILDE TRY VBAREQUAL WHILE WITH YIELD
 
-%type<intNumber> NUMBER MINUS PLUS TILDE pick_unop
+
+%type<intNumber> PLUSEQUAL MINEQUAL STAREQUAL SLASHEQUAL PERCENTEQUAL AMPEREQUAL
+%type<intNumber> VBAREQUAL CIRCUMFLEXEQUAL LEFTSHIFTEQUAL RIGHTSHIFTEQUAL 
+%type<intNumber> DOUBLESTAREQUAL DOUBLESLASHEQUAL
+%type<intNumber> MINUS PLUS TILDE pick_unop
 %type<intNumber> pick_PLUS_MINUS
 %type<intNumber> pick_multop  
 %type<intNumber> INT_NUM
@@ -41,6 +45,8 @@
 %type<node> power or_test comparison expr xor_expr
 %type<node> shift_expr star_EQUAL expr_stmt testlist
 %type<node> pick_yield_expr_testlist
+
+%type<intNumber> augassign
 %type<id> NAME
 
 
@@ -148,7 +154,25 @@ small_stmt // Used in: simple_stmt, star_SEMI_small_stmt
 	| assert_stmt
 	;
 expr_stmt // Used in: small_stmt
-	: testlist augassign pick_yield_expr_testlist 
+	: testlist augassign pick_yield_expr_testlist {
+		const Literal *lhs = $1->eval();	
+		const Literal *rhs = static_cast<Literal*>($3);
+		std::string name = static_cast<IdentNode*>($1)->getIdent();
+		
+		switch($2) {
+			case PLUSEQUAL: SymbolTable::getInstance().setValue(name, *lhs + *rhs);
+				break;
+			case MINEQUAL: SymbolTable::getInstance().setValue(name, *lhs - *rhs);
+				break;
+			case STAREQUAL: SymbolTable::getInstance().setValue(name, *lhs * *rhs);
+				break;
+			case SLASHEQUAL: SymbolTable::getInstance().setValue(name, *lhs / *rhs);
+				break;
+			case PERCENTEQUAL:SymbolTable::getInstance().setValue(name, *lhs % *rhs); 
+				break;
+		}
+
+	}
 	| testlist star_EQUAL {
 		if ($2 != 0) {
 			$$ = new AsgBinaryNode($1, $2);
@@ -172,16 +196,16 @@ star_EQUAL // Used in: expr_stmt, star_EQUAL
 	{$$ = 0; }
 	;
 augassign // Used in: expr_stmt
-	: PLUSEQUAL
-	| MINEQUAL
-	| STAREQUAL
-	| SLASHEQUAL
-	| PERCENTEQUAL
+	: PLUSEQUAL			{ $$ = PLUSEQUAL;    }
+	| MINEQUAL			{ $$ = MINEQUAL;     }
+	| STAREQUAL			{ $$ = STAREQUAL;    }
+	| SLASHEQUAL		{ $$ = SLASHEQUAL;   }
+	| PERCENTEQUAL		{ $$ = PERCENTEQUAL; }
 	| AMPEREQUAL
 	| VBAREQUAL
 	| CIRCUMFLEXEQUAL
 	| LEFTSHIFTEQUAL
-	| RIGHTSHIFTEQUAL
+	| RIGHTSHIFTEQUAL 	
 	| DOUBLESTAREQUAL
 	| DOUBLESLASHEQUAL
 	;
@@ -484,30 +508,35 @@ term // Used in: arith_expr, term
 		}
 		else {
 			// integer division
+			$$ = new IntDivBinaryNode($1, $3);
+			pool.add($$);
 		}
 	}
 	;
 pick_multop // Used in: term
-	: STAR 			{ $$ = STAR; }
-	| SLASH			{ $$ = SLASH; }
-	| PERCENT		{ $$ = PERCENT; }
+	: STAR 			{ $$ = STAR;        }
+	| SLASH			{ $$ = SLASH;       }
+	| PERCENT		{ $$ = PERCENT;     }
 	| DOUBLESLASH   { $$ = DOUBLESLASH; }
 	;
 factor // Used in: term, factor, power
 	: pick_unop factor {
 		if ($1 == MINUS) {
-			$2->flip();
+			$$ = new UnaryNode($2);	
 		}
 	}
 	| power
 	;
 pick_unop // Used in: factor
 	: PLUS
-	| MINUS
+	| MINUS { $$ = MINUS; }
 	| TILDE
 	;
 power // Used in: factor
-	: atom star_trailer DOUBLESTAR factor
+	: atom star_trailer DOUBLESTAR factor {
+		$$ = new PowBinaryNode($1, $4);
+		pool.add($$);
+	}
 	| atom star_trailer
 	;
 star_trailer // Used in: power, star_trailer
