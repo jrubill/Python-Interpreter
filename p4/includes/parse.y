@@ -523,7 +523,8 @@ factor // Used in: term, factor, power
 	: pick_unop factor {
 		if ($1 == MINUS) {
 			$$ = new UnaryNode($2);	
-		}
+	        pool.add($$);	
+        }
 	}
 	| power
 	;

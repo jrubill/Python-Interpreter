@@ -38,7 +38,11 @@ protected:
 class UnaryNode : public Node {
 public:
 	UnaryNode(Node *_val) : val(_val) {}
-	virtual const Literal *eval() const;
+    virtual ~UnaryNode() {}	
+    virtual const Literal *eval() const;
+    UnaryNode(const UnaryNode&) = delete;
+    UnaryNode& operator=(const UnaryNode&) = delete;
+
 private:
 	Node *val;
 };
