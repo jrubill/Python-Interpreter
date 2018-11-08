@@ -44,7 +44,7 @@
 %type<node> opt_test term lambdef not_test and_expr
 %type<node> power or_test comparison expr xor_expr
 %type<node> shift_expr star_EQUAL expr_stmt testlist
-%type<node> pick_yield_expr_testlist
+%type<node> pick_yield_expr_testlist subscript
 
 %type<id> plus_STRING  
 %type<intNumber> augassign
@@ -182,8 +182,8 @@ expr_stmt // Used in: small_stmt
 	}
 	;
 pick_yield_expr_testlist // Used in: expr_stmt, star_EQUAL
-	: yield_expr
-	| testlist
+	: yield_expr {$$ = $$;}
+	| testlist  {$$ = $1;}
 	;
 star_EQUAL // Used in: expr_stmt, star_EQUAL
 	: star_EQUAL EQUAL pick_yield_expr_testlist {
@@ -433,7 +433,7 @@ and_test // Used in: or_test, and_test
 	| and_test AND not_test
 	;
 not_test // Used in: and_test, not_test
-	: NOT not_test
+	: NOT not_test {$$ = $$;}
 	| comparison
 	;
 comparison // Used in: not_test, comparison
@@ -546,10 +546,10 @@ star_trailer // Used in: power, star_trailer
 	| %empty
 	;
 atom // Used in: power
-	: LPAR opt_yield_test RPAR
-	| LSQB opt_listmaker RSQB
-	| LBRACE opt_dictorsetmaker RBRACE
-	| BACKQUOTE testlist1 BACKQUOTE
+	: LPAR opt_yield_test RPAR  { ;  }
+	| LSQB opt_listmaker RSQB {std::cout << "list me\n";}
+	| LBRACE opt_dictorsetmaker RBRACE { ; }
+	| BACKQUOTE testlist1 BACKQUOTE { ;  }
 	| NAME			{ $$ = new IdentNode($1);     pool.add($$);  }
 	| INT_NUM   	{ $$ = new IntLiteral($1);    pool.add($$);  }
 	| FLOAT_NUM 	{ $$ = new FloatLiteral($1);  pool.add($$);  }
@@ -573,7 +573,7 @@ opt_dictorsetmaker // Used in: atom
 	;
 plus_STRING // Used in: atom, plus_STRING
 	: plus_STRING STRING { $$ = $1;}
-	| STRING 
+	| STRING {;} 
 	;
 listmaker // Used in: opt_listmaker
 	: test list_for
@@ -584,26 +584,26 @@ testlist_comp // Used in: pick_yield_expr_testlist_comp
 	| test star_COMMA_test opt_COMMA
 	;
 lambdef // Used in: test
-	: LAMBDA varargslist COLON test
-	| LAMBDA COLON test
+	: LAMBDA varargslist COLON test {; }
+	| LAMBDA COLON test {;}
 	;
 trailer // Used in: star_trailer
 	: LPAR opt_arglist RPAR
-	| LSQB subscriptlist RSQB
+	| LSQB subscriptlist RSQB { std::cout << "SLICE" << std::endl;  }
 	| DOT NAME
 	;
 subscriptlist // Used in: trailer
 	: subscript star_COMMA_subscript COMMA
-	| subscript star_COMMA_subscript
+	| subscript star_COMMA_subscript { std::cout << $1 << std::endl; }
 	;
 star_COMMA_subscript // Used in: subscriptlist, star_COMMA_subscript
-	: star_COMMA_subscript COMMA subscript
+	: star_COMMA_subscript COMMA subscript 
 	| %empty
 	;
 subscript // Used in: subscriptlist, star_COMMA_subscript
-	: DOT DOT DOT
-	| test
-	| opt_test_only COLON opt_test_only opt_sliceop
+	: DOT DOT DOT { ; }
+	| test {$$ = $1;}
+	| opt_test_only COLON opt_test_only opt_sliceop {}
 	;
 opt_test_only // Used in: subscript
 	: test
