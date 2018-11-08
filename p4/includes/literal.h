@@ -10,7 +10,6 @@ public:
   virtual const Literal* opPlus(int) const =0;
   virtual const Literal* opPlus(std::string) const =0;
 
-
   virtual const Literal* operator*(const Literal& rhs) const =0;
   virtual const Literal* opMult(float) const =0;
   virtual const Literal* opMult(int) const =0;
@@ -53,10 +52,10 @@ public:
         return rhs.opPlus(val); 
   }
   virtual const Literal* opPlus(float) const {
-      return nullptr;
+ 		throw std::string("Cannot add Floats and Strings!"); 
   } 
   virtual const Literal* opPlus(int) const {
-      return nullptr;
+ 		throw std::string("Cannot add Integers and Strings!"); 
   } 
   virtual const Literal* opPlus(std::string str) const {
       const Literal *node = new StringLiteral(str + val);
@@ -68,7 +67,7 @@ public:
       return rhs.opMult(val);
   } 
   virtual const Literal* opMult(float) const {
-      return nullptr;
+ 		throw std::string("Cannot multiply string and float!"); 
   } 
   virtual const Literal* opMult(int lhs) const {
       std::string temp = val;
@@ -79,61 +78,61 @@ public:
       return node; 
   } 
   virtual const Literal* opMult(std::string) const {
-    return nullptr;
+ 		throw std::string("Cannot multiply String and String!"); 
   }
 
   virtual const Literal* operator-(const Literal&) const {
-    return this;
+ 		throw std::string("Cannot subtract with a string!"); 
   } 
   virtual const Literal* opSubt(float) const {
-    return this;
+ 		throw std::string("Cannot subtract with a string!"); 
   } 
   virtual const Literal* opSubt(int) const {
-    return this;
+ 		throw std::string("Cannot subtract with a string!"); 
   } 
 
   virtual const Literal* operator/(const Literal&) const {
-    return this;
+ 		throw std::string("Cannot divide with a String!"); 
   } 
   virtual const Literal* opDiv(float) const {
-    return this;
+ 		throw std::string("Cannot divide with a String!"); 
   } 
   virtual const Literal* opDiv(int) const {
-    return this;
+ 		throw std::string("Cannot divide with String!"); 
   } 
 
   virtual const Literal* operator%(const Literal&) const {
-    return this;
+ 		throw std::string("Cannot perform modulus on String!"); 
   } 
   virtual const Literal* opMod(float) const {
-    return this;
+ 		throw std::string("Cannot perform modulus on String!"); 
   } 
   virtual const Literal* opMod(int) const {
-    return this;
+ 		throw std::string("Cannot perform modulus on String!"); 
   } 
   
   virtual const Literal* IntDiv(const Literal&) const {
-    return this;
+ 		throw std::string("Cannot perform Integer Division on String!"); 
   } 
   virtual const Literal* opIntDiv(float) const {
-    return this;
+ 		throw std::string("Cannot perform Integer Division on String!"); 
   }
   virtual const Literal* opIntDiv(int) const {
-    return this;
+ 		throw std::string("Cannot perform Integer Division on String!"); 
   } 
   
   virtual const Literal* Power(const Literal&) const {
-    return this;
+ 		throw std::string("Cannot take power of String!"); 
   } 
   virtual const Literal* opPow(float) const {
-    return this;
+ 		throw std::string("Cannot take power of String!"); 
   } 
   virtual const Literal* opPow(int) const {
-    return this;
+ 		throw std::string("Cannot take power of String!"); 
   }
 
   virtual const Literal* flip() const {
-    return this;
+ 		throw std::string("Cannot flip a string!"); 
   } 
 
   virtual const Literal* eval() const {
@@ -164,7 +163,7 @@ public:
     return node;
   }
   virtual const Literal* opPlus(std::string) const {
-      return nullptr;
+ 		throw std::string("Cannot perform addition with Float and String!"); 
   }
   virtual const Literal* operator-(const Literal& rhs) const  {
     return rhs.opSubt(val);
@@ -194,7 +193,7 @@ public:
     return node;
   }
   virtual const Literal* opMult(std::string) const {
-      return nullptr;
+ 		throw std::string("Cannot perform multiplication with Float and String!"); 
   }
 
   virtual const Literal* operator/(const Literal& rhs) const  {
@@ -289,7 +288,7 @@ public:
     return node;
   }
   virtual const Literal* opPlus(std::string) const {
-      return nullptr;
+ 		throw std::string("Cannot perform addition with Integer and String!"); 
   }
   virtual const Literal* operator-(const Literal& rhs) const  {
     return rhs.opSubt(val);

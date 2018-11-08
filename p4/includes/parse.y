@@ -44,7 +44,7 @@
 %type<node> opt_test term lambdef not_test and_expr
 %type<node> power or_test comparison expr xor_expr
 %type<node> shift_expr star_EQUAL expr_stmt testlist
-%type<node> pick_yield_expr_testlist subscript
+%type<node> pick_yield_expr_testlist subscript opt_yield_test  
 
 %type<id> plus_STRING  
 %type<intNumber> augassign
@@ -182,8 +182,8 @@ expr_stmt // Used in: small_stmt
 	}
 	;
 pick_yield_expr_testlist // Used in: expr_stmt, star_EQUAL
-	: yield_expr {$$ = $$;}
-	| testlist  {$$ = $1;}
+	: yield_expr { ; } // potentially fix this
+	| testlist  { $$ = $1; }
 	;
 star_EQUAL // Used in: expr_stmt, star_EQUAL
 	: star_EQUAL EQUAL pick_yield_expr_testlist {
@@ -211,7 +211,17 @@ augassign // Used in: expr_stmt
 	| DOUBLESLASHEQUAL
 	;
 print_stmt // Used in: small_stmt
-	: PRINT opt_test { $2->eval()->print(); }
+	: PRINT opt_test { 
+		try {	
+			$2->eval()->print(); 
+		}
+		catch (const std::string &str) {
+			std::cout << str << std::endl;
+		}
+		catch ( ... ) {
+			std::cout << "oopsies" << std::endl;
+		}
+	}
 	| PRINT RIGHTSHIFT test opt_test_2
 	;
 star_COMMA_test // Used in: star_COMMA_test, opt_test, listmaker, testlist_comp, testlist, pick_for_test
@@ -546,8 +556,8 @@ star_trailer // Used in: power, star_trailer
 	| %empty
 	;
 atom // Used in: power
-	: LPAR opt_yield_test RPAR  { ;  }
-	| LSQB opt_listmaker RSQB {std::cout << "list me\n";}
+	: LPAR opt_yield_test RPAR { $$ = $2; }
+	| LSQB opt_listmaker RSQB { std::cout << "list me\n"; }
 	| LBRACE opt_dictorsetmaker RBRACE { ; }
 	| BACKQUOTE testlist1 BACKQUOTE { ;  }
 	| NAME			{ $$ = new IdentNode($1);     pool.add($$);  }
@@ -560,8 +570,8 @@ pick_yield_expr_testlist_comp // Used in: opt_yield_test
 	| testlist_comp
 	;
 opt_yield_test // Used in: atom
-	: pick_yield_expr_testlist_comp
-	| %empty
+	: pick_yield_expr_testlist_comp { ; }
+	| %empty { ; }
 	;
 opt_listmaker // Used in: atom
 	: listmaker
@@ -572,8 +582,10 @@ opt_dictorsetmaker // Used in: atom
 	| %empty
 	;
 plus_STRING // Used in: atom, plus_STRING
-	: plus_STRING STRING { $$ = $1;}
-	| STRING {;} 
+	: plus_STRING STRING { 
+		$$ = $1; // need to do string concatenation
+	}
+	| STRING { ; }
 	;
 listmaker // Used in: opt_listmaker
 	: test list_for
@@ -584,17 +596,20 @@ testlist_comp // Used in: pick_yield_expr_testlist_comp
 	| test star_COMMA_test opt_COMMA
 	;
 lambdef // Used in: test
-	: LAMBDA varargslist COLON test {; }
-	| LAMBDA COLON test {;}
+	: LAMBDA varargslist COLON test { ; }
+	| LAMBDA COLON test { ; }
 	;
 trailer // Used in: star_trailer
 	: LPAR opt_arglist RPAR
-	| LSQB subscriptlist RSQB { std::cout << "SLICE" << std::endl;  }
+	| LSQB subscriptlist RSQB { 
+		
+		std::cout << "Subscript" << std::endl; 
+	}
 	| DOT NAME
 	;
 subscriptlist // Used in: trailer
 	: subscript star_COMMA_subscript COMMA
-	| subscript star_COMMA_subscript { std::cout << $1 << std::endl; }
+	| subscript star_COMMA_subscript { ; }
 	;
 star_COMMA_subscript // Used in: subscriptlist, star_COMMA_subscript
 	: star_COMMA_subscript COMMA subscript 
