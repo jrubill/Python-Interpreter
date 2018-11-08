@@ -172,7 +172,10 @@ comment   #.*
 
 
 {stringprefix}?"'''"        { mark_long_string_start(); BEGIN(LONG_STRING); }
-<LONG_STRING>"'''"          { mark_long_string_end(); BEGIN(INITIAL); return STRING; }
+<LONG_STRING>"'''"          { 
+                                mark_long_string_end(); BEGIN(INITIAL); 
+                                return STRING; 
+                            }
 
 {stringprefix}?"\"\"\""     { mark_long_string_start(); BEGIN(LONG_STRING2); }
 <LONG_STRING2>"\"\"\""      { mark_long_string_end(); BEGIN(INITIAL); return STRING; }
@@ -182,7 +185,7 @@ comment   #.*
 <LONG_STRING,LONG_STRING2>.            { ; }
 <LONG_STRING,LONG_STRING2><<EOF>>      { display_error("unterminated long string at EOF"); }
 
-{string}   { return STRING; }
+{string}   { yylval.id = new char[yyleng]; strncpy(yylval.id, &yytext[1], sizeof(char)*(strlen(yytext)-2)); return STRING; }
 
 
 "("        { left_enclose();  return LPAR; }

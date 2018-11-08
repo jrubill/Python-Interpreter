@@ -46,6 +46,7 @@
 %type<node> shift_expr star_EQUAL expr_stmt testlist
 %type<node> pick_yield_expr_testlist
 
+%type<id> plus_STRING  
 %type<intNumber> augassign
 %type<id> NAME
 
@@ -549,10 +550,10 @@ atom // Used in: power
 	| LSQB opt_listmaker RSQB
 	| LBRACE opt_dictorsetmaker RBRACE
 	| BACKQUOTE testlist1 BACKQUOTE
-	| NAME			{ $$ = new IdentNode($1);    pool.add($$);  }
-	| INT_NUM   	{ $$ = new IntLiteral($1);   pool.add($$);  }
-	| FLOAT_NUM 	{ $$ = new FloatLiteral($1); pool.add($$);  }
-	| plus_STRING	{ ; }
+	| NAME			{ $$ = new IdentNode($1);     pool.add($$);  }
+	| INT_NUM   	{ $$ = new IntLiteral($1);    pool.add($$);  }
+	| FLOAT_NUM 	{ $$ = new FloatLiteral($1);  pool.add($$);  }
+	| plus_STRING	{ $$ = new StringLiteral($1); pool.add($$);  }
 	;
 pick_yield_expr_testlist_comp // Used in: opt_yield_test
 	: yield_expr
@@ -571,8 +572,8 @@ opt_dictorsetmaker // Used in: atom
 	| %empty
 	;
 plus_STRING // Used in: atom, plus_STRING
-	: plus_STRING STRING
-	| STRING
+	: plus_STRING STRING { $$ = $1;}
+	| STRING 
 	;
 listmaker // Used in: opt_listmaker
 	: test list_for
