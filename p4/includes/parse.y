@@ -43,8 +43,8 @@
 %type<node> atom arith_expr test factor and_test
 %type<node> opt_test term lambdef not_test and_expr
 %type<node> power or_test comparison expr xor_expr
-%type<node> shift_expr star_EQUAL expr_stmt testlist
-%type<node> pick_yield_expr_testlist subscript opt_yield_test  
+%type<node> shift_expr star_EQUAL expr_stmt testlist star_trailer trailer
+%type<node> pick_yield_expr_testlist subscript opt_yield_test subscriptlist
 
 %type<id> plus_STRING  
 %type<intNumber> augassign
@@ -206,7 +206,7 @@ augassign // Used in: expr_stmt
 	| VBAREQUAL
 	| CIRCUMFLEXEQUAL
 	| LEFTSHIFTEQUAL
-	| RIGHTSHIFTEQUAL 	
+	| RIGHTSHIFTEQUAL 
 	| DOUBLESTAREQUAL
 	| DOUBLESLASHEQUAL
 	;
@@ -549,10 +549,12 @@ power // Used in: factor
 		$$ = new PowBinaryNode($1, $4);
 		pool.add($$);
 	}
-	| atom star_trailer
+	| atom star_trailer {
+		//if ($2 != nullptr && dynamic_cast<IntLiteral *>($2)) std::cout << "potatoes" << std::endl;
+	}
 	;
 star_trailer // Used in: power, star_trailer
-	: star_trailer trailer
+	: star_trailer trailer {  }
 	| %empty
 	;
 atom // Used in: power
@@ -602,14 +604,14 @@ lambdef // Used in: test
 trailer // Used in: star_trailer
 	: LPAR opt_arglist RPAR
 	| LSQB subscriptlist RSQB { 
-		
+		$$ = $2;
 		std::cout << "Subscript" << std::endl; 
 	}
 	| DOT NAME
 	;
 subscriptlist // Used in: trailer
-	: subscript star_COMMA_subscript COMMA
-	| subscript star_COMMA_subscript { ; }
+	: subscript star_COMMA_subscript COMMA { }
+	| subscript star_COMMA_subscript {  }
 	;
 star_COMMA_subscript // Used in: subscriptlist, star_COMMA_subscript
 	: star_COMMA_subscript COMMA subscript 
@@ -617,8 +619,8 @@ star_COMMA_subscript // Used in: subscriptlist, star_COMMA_subscript
 	;
 subscript // Used in: subscriptlist, star_COMMA_subscript
 	: DOT DOT DOT { ; }
-	| test {$$ = $1;}
-	| opt_test_only COLON opt_test_only opt_sliceop {}
+	| test { if (dynamic_cast<IntLiteral *>($1)) std::cout << "woo!" << std::endl;}
+	| opt_test_only COLON opt_test_only opt_sliceop {  }
 	;
 opt_test_only // Used in: subscript
 	: test
