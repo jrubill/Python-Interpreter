@@ -94,3 +94,9 @@ public:
 	PowBinaryNode(Node *left, Node *right) : BinaryNode(left, right) {}
 	virtual const Literal *eval() const;
 };
+
+class SubscriptNode : public BinaryNode {
+public:
+    SubscriptNode(Node *left, Node *right) : BinaryNode(left,right) {}
+    virtual const Literal *eval() const;
+};

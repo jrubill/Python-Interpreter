@@ -36,6 +36,9 @@ public:
   virtual const Literal* opPow(float) const = 0;
   virtual const Literal* opPow(int) const = 0;
 
+  virtual const Literal* operator[](const Literal &rhs) const = 0;
+  virtual const Literal* subscript(std::string) const = 0;
+
   virtual const Literal* flip() const = 0;
 
   virtual const Literal* eval() const = 0;
@@ -44,6 +47,7 @@ public:
   }
 };
 
+class IntLiteral;
 class StringLiteral : public Literal {
 public:
     StringLiteral(char *str) : val(str) {} 
@@ -138,6 +142,17 @@ public:
   virtual const Literal* eval() const {
     return this;
   } 
+
+  virtual const Literal* operator[](const Literal &rhs) const {
+
+        return rhs.subscript(val); 
+      
+      //else throw std::string("Invalid subscript operation!");
+  } 
+  virtual const Literal* subscript(std::string) const {
+      throw std::string("Invalid subscript operation!");
+  }
+
   virtual void print() const {
     std::cout << "STRING: " << val << std::endl;
   }  
@@ -253,6 +268,14 @@ virtual const Literal* opPow(float lhs) const {
 	const Literal *node = new FloatLiteral(std::pow(lhs, val));
 	PoolOfNodes::getInstance().add(node);
 	return node;
+}
+
+virtual const Literal* operator[](const Literal&) const {
+    throw std::string("Invalid operation!");
+}
+
+virtual const Literal* subscript(std::string) const {
+    throw std::string("Invalid operation!");
 }
 
 
@@ -388,6 +411,15 @@ virtual const Literal* flip() const {
 	const Literal *node = new IntLiteral(val * -1);
 	PoolOfNodes::getInstance().add(node);
 	return node;
+}
+
+virtual const Literal* operator[](const Literal&) const {
+    throw std::string("not valid operation");
+}
+virtual const Literal* subscript(std::string str) const {
+    const Literal *node = new StringLiteral(str[val] + "");
+    PoolOfNodes::getInstance().add(node);
+    return node;
 }
   virtual const Literal* eval() const { return this; }
   virtual void print() const { 

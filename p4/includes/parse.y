@@ -549,12 +549,11 @@ power // Used in: factor
 		$$ = new PowBinaryNode($1, $4);
 		pool.add($$);
 	}
-	| atom star_trailer {
-		//if ($2 != nullptr && dynamic_cast<IntLiteral *>($2)) std::cout << "potatoes" << std::endl;
-	}
+	| atom star_trailer
+    }
 	;
 star_trailer // Used in: power, star_trailer
-	: star_trailer trailer {  }
+	: star_trailer trailer { $$ = $2; }
 	| %empty
 	;
 atom // Used in: power
@@ -605,7 +604,6 @@ trailer // Used in: star_trailer
 	: LPAR opt_arglist RPAR
 	| LSQB subscriptlist RSQB { 
 		$$ = $2;
-		std::cout << "Subscript" << std::endl; 
 	}
 	| DOT NAME
 	;
