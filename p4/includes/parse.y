@@ -216,7 +216,7 @@ print_stmt // Used in: small_stmt
 			$2->eval()->print(); 
 		}
 		catch (const std::string &str) {
-			std::cout << str << std::endl;
+			std::cout << "Error " << str << std::endl;
 		}
 		catch ( ... ) {
 			std::cout << "oopsies" << std::endl;
@@ -549,12 +549,16 @@ power // Used in: factor
 		$$ = new PowBinaryNode($1, $4);
 		pool.add($$);
 	}
-	| atom star_trailer
-    }
-	;
+    | atom star_trailer {
+        if ($2 != nullptr) {
+            $$ = new SubscriptNode($1, $2); 
+            pool.add($$);
+        }
+    }	
+    ;
 star_trailer // Used in: power, star_trailer
 	: star_trailer trailer { $$ = $2; }
-	| %empty
+	| %empty { $$ = nullptr; }
 	;
 atom // Used in: power
 	: LPAR opt_yield_test RPAR { $$ = $2; }
@@ -608,8 +612,8 @@ trailer // Used in: star_trailer
 	| DOT NAME
 	;
 subscriptlist // Used in: trailer
-	: subscript star_COMMA_subscript COMMA { }
-	| subscript star_COMMA_subscript {  }
+	: subscript star_COMMA_subscript COMMA { $$ = nullptr; }
+	| subscript star_COMMA_subscript { $$ = $1; }
 	;
 star_COMMA_subscript // Used in: subscriptlist, star_COMMA_subscript
 	: star_COMMA_subscript COMMA subscript 
@@ -617,7 +621,7 @@ star_COMMA_subscript // Used in: subscriptlist, star_COMMA_subscript
 	;
 subscript // Used in: subscriptlist, star_COMMA_subscript
 	: DOT DOT DOT { ; }
-	| test { if (dynamic_cast<IntLiteral *>($1)) std::cout << "woo!" << std::endl;}
+	| test { $$ = $1; }
 	| opt_test_only COLON opt_test_only opt_sliceop {  }
 	;
 opt_test_only // Used in: subscript

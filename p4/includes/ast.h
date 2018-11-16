@@ -97,6 +97,7 @@ public:
 
 class SubscriptNode : public BinaryNode {
 public:
-    SubscriptNode(Node *left, Node *right) : BinaryNode(left,right) {}
-    virtual const Literal *eval() const;
+  SubscriptNode(Node *left, Node *right) : BinaryNode(left, right) {}   
+  virtual const Literal* eval() const;
 };
+

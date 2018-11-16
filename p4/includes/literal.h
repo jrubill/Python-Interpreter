@@ -37,7 +37,7 @@ public:
   virtual const Literal* opPow(int) const = 0;
 
   virtual const Literal* operator[](const Literal &rhs) const = 0;
-  virtual const Literal* subscript(std::string) const = 0;
+  virtual const Literal* subscript(std::string) const = 0; 
 
   virtual const Literal* flip() const = 0;
 
@@ -50,7 +50,7 @@ public:
 class IntLiteral;
 class StringLiteral : public Literal {
 public:
-    StringLiteral(char *str) : val(str) {} 
+    //StringLiteral(char *str) : val(str) {} 
     StringLiteral(std::string str) : val(str) {}    
   virtual const Literal* operator+(const Literal& rhs) const {
         return rhs.opPlus(val); 
@@ -144,11 +144,9 @@ public:
   } 
 
   virtual const Literal* operator[](const Literal &rhs) const {
-
-        return rhs.subscript(val); 
-      
-      //else throw std::string("Invalid subscript operation!");
+    return rhs.subscript(val);
   } 
+
   virtual const Literal* subscript(std::string) const {
       throw std::string("Invalid subscript operation!");
   }
@@ -417,7 +415,10 @@ virtual const Literal* operator[](const Literal&) const {
     throw std::string("not valid operation");
 }
 virtual const Literal* subscript(std::string str) const {
-    const Literal *node = new StringLiteral(str[val] + "");
+    if (static_cast<unsigned long>(val) >= str.length()) throw std::string("out of bounds!"); 
+    std::string temp;
+    temp.push_back(str[val]);
+    const Literal *node = new StringLiteral(temp);
     PoolOfNodes::getInstance().add(node);
     return node;
 }

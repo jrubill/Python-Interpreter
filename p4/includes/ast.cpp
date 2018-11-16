@@ -94,8 +94,8 @@ const Literal *PowBinaryNode::eval() const {
 }
 
 const Literal *SubscriptNode::eval() const {
-    const Literal *x = left->eval();
-    const Literal *y = right->eval();
+    const Literal *x = left->eval(); 
+    const Literal *y = right->eval(); 
     return (*x)[*y];
 
 }
