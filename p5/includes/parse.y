@@ -49,7 +49,7 @@
 %type<node> power or_test comparison expr xor_expr
 %type<node> shift_expr star_EQUAL expr_stmt testlist star_trailer trailer
 %type<node> pick_yield_expr_testlist subscript opt_yield_test subscriptlist
-%type<node> return_stmt stmt funcdef suite decorator simple_stmt decorated
+%type<node> return_stmt stmt funcdef suite decorator simple_stmt decorated print_stmt
 %type<suite> plus_stmt 
 %type<id> plus_STRING STRING
 %type<intNumber> augassign
@@ -221,7 +221,7 @@ augassign // Used in: expr_stmt
 print_stmt // Used in: small_stmt
 	: PRINT opt_test { 
 		try {	
-			$2->eval()->print(); 
+			$$ = new PrintNode($2); //$2->eval()->print(); 
 		}
 		catch (const std::string &str) {
 			std::cout << "Error " << str << std::endl;

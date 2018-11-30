@@ -148,3 +148,14 @@ public:
 private:
     const Node *val;
 };
+
+class PrintNode : public Node {
+public: 
+    PrintNode(Node *n) : val(n) {}
+    virtual ~PrintNode() { delete val; }
+    virtual const Literal *eval() const;
+    PrintNode(const PrintNode&) = delete;
+    PrintNode& operator=(const PrintNode&) = delete;
+private:
+    Node *val;
+};

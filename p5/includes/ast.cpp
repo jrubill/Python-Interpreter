@@ -102,7 +102,7 @@ const Literal *SubscriptNode::eval() const {
 
 const Literal *FuncNode::eval() const {
     // find it in the table manager
-   
+    suite->eval(); 
     return nullptr;
 }
 
@@ -132,4 +132,9 @@ const Literal* CallNode::eval() const {
 
 const Literal *ReturnNode::eval() const {
     return val->eval();
+}
+
+const Literal* PrintNode::eval() const {
+    val->eval()->print();
+    return nullptr;
 }
