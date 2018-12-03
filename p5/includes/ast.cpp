@@ -101,7 +101,6 @@ const Literal *SubscriptNode::eval() const {
 }
 
 const Literal *FuncNode::eval() const {
-    // find it in the table manager
     suite->eval(); 
     return nullptr;
 }
@@ -118,8 +117,9 @@ const Literal *SuiteNode::eval() const {
 
 const Literal* CallNode::eval() const {
     TableManager& tm = TableManager::getInstance();
+    std::cout << "got hit!\n";
     if (!tm.checkFunc(ident)) {
-        std::cout << "function " << ident << "not found" << std::endl;
+        std::cout << "function " << ident << " not found" << std::endl;
         std::exception up = std::exception();
         throw up;
     }

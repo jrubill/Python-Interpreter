@@ -44,12 +44,12 @@
 %type<intNumber> pick_multop  
 %type<intNumber> INT_NUM
 %type<fltNumber> FLOAT_NUM
-%type<node> atom arith_expr test factor and_test
+%type<node> atom arith_expr test factor and_test stmt
 %type<node> opt_test term lambdef not_test and_expr
 %type<node> power or_test comparison expr xor_expr
 %type<node> shift_expr star_EQUAL expr_stmt testlist star_trailer trailer
 %type<node> pick_yield_expr_testlist subscript opt_yield_test subscriptlist
-%type<node> return_stmt stmt funcdef suite decorator simple_stmt decorated print_stmt
+%type<node> return_stmt funcdef suite decorator simple_stmt decorated print_stmt compound_stmt
 %type<suite> plus_stmt 
 %type<id> plus_STRING STRING
 %type<intNumber> augassign
@@ -70,15 +70,16 @@ file_input // Used in: start
 	: star_NEWLINE_stmt ENDMARKER
 	;
 pick_NEWLINE_stmt // Used in: star_NEWLINE_stmt
-	: NEWLINE
-	| stmt
+	: NEWLINE 
+	| stmt  { if ($1) $1->eval(); 
+        }
 	;
 star_NEWLINE_stmt // Used in: file_input, star_NEWLINE_stmt
 	: star_NEWLINE_stmt pick_NEWLINE_stmt
 	| %empty
 	;
 decorator // Used in: decorators
-	: AT dotted_name LPAR opt_arglist RPAR NEWLINE
+	: AT dotted_name LPAR opt_arglist RPAR NEWLINE { ; }
 	| AT dotted_name NEWLINE
 	;
 opt_arglist // Used in: decorator, trailer
@@ -86,11 +87,11 @@ opt_arglist // Used in: decorator, trailer
 	| %empty
 	;
 decorators // Used in: decorators, decorated
-	: decorators decorator
-	| decorator
+	: decorators decorator { ;  }
+	| decorator { ; }
 	;
 decorated // Used in: compound_stmt
-	: decorators classdef
+	: decorators classdef {   }
 	| decorators funcdef {$$ = $2;}
 	;
 funcdef // Used in: decorated, compound_stmt
@@ -141,12 +142,12 @@ star_fpdef_notest // Used in: fplist, star_fpdef_notest
 	| %empty
 	;
 stmt // Used in: pick_NEWLINE_stmt, plus_stmt
-	: simple_stmt
-	| compound_stmt
+	: simple_stmt { $$ = $1; }
+	| compound_stmt {; }
 	;
 simple_stmt // Used in: stmt, suite
-	: small_stmt star_SEMI_small_stmt SEMI NEWLINE
-	| small_stmt star_SEMI_small_stmt NEWLINE
+	: small_stmt star_SEMI_small_stmt SEMI NEWLINE { ;  }
+	| small_stmt star_SEMI_small_stmt NEWLINE { ;  }
 	;
 star_SEMI_small_stmt // Used in: simple_stmt, star_SEMI_small_stmt
 	: star_SEMI_small_stmt SEMI small_stmt
@@ -221,8 +222,9 @@ augassign // Used in: expr_stmt
 print_stmt // Used in: small_stmt
 	: PRINT opt_test { 
 		try {	
-			$$ = new PrintNode($2); //$2->eval()->print(); 
-		}
+			$$ = new PrintNode($2);
+            pool.add($$);	
+        }
 		catch (const std::string &str) {
 			std::cout << "Error " << str << std::endl;
 		}
@@ -230,7 +232,7 @@ print_stmt // Used in: small_stmt
 			std::cout << "oopsies" << std::endl;
 		}
 	}
-	| PRINT RIGHTSHIFT test opt_test_2
+	| PRINT RIGHTSHIFT test opt_test_2 { ;  }
 	;
 star_COMMA_test // Used in: star_COMMA_test, opt_test, listmaker, testlist_comp, testlist, pick_for_test
 	: star_COMMA_test COMMA test
@@ -354,14 +356,14 @@ assert_stmt // Used in: small_stmt
 	| ASSERT test
 	;
 compound_stmt // Used in: stmt
-	: if_stmt
-	| while_stmt
-	| for_stmt
-	| try_stmt
-	| with_stmt
-	| funcdef
-	| classdef
-	| decorated
+	: if_stmt { $$ = nullptr;} 
+	| while_stmt { $$ = nullptr;}
+	| for_stmt { $$ = nullptr;} 
+	| try_stmt { $$ = nullptr;} 
+	| with_stmt { $$ = nullptr;} 
+	| funcdef { $$ = $1; }
+	| classdef { $$ = nullptr;} 
+	| decorated { $$ = nullptr;} 
 	;
 if_stmt // Used in: compound_stmt
 	: IF test COLON suite star_ELIF ELSE COLON suite
@@ -581,6 +583,8 @@ power // Used in: factor
         std::string n = reinterpret_cast<IdentNode*>($1)->getIdent();
         $$ = new CallNode(n);
         pool.add($$);
+        }
+        else $$ = $1;
 
         /* Need to fix this
         if ($2 != nullptr) {
@@ -588,9 +592,7 @@ power // Used in: factor
             pool.add($$);
         } */
 
-        }
-        else $$ = $1;
-    }	
+            }	
     ;
 star_trailer // Used in: power, star_trailer
 	: star_trailer trailer { $$ = $2; }
@@ -598,7 +600,7 @@ star_trailer // Used in: power, star_trailer
 	;
 atom // Used in: power
 	: LPAR opt_yield_test RPAR { $$ = $2; }
-	| LSQB opt_listmaker RSQB { std::cout << "list me\n"; }
+	| LSQB opt_listmaker RSQB { ; }
 	| LBRACE opt_dictorsetmaker RBRACE { ; }
 	| BACKQUOTE testlist1 BACKQUOTE { ;  }
 	| NAME			{ $$ = new IdentNode($1);     pool.add($$);  delete [] $1; }
