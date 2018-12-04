@@ -10,7 +10,7 @@ const Literal* SymbolTable::getValue(const std::string& name) const {
 }
 
 void SymbolTable::setValue(const std::string& name, const Literal* val) { 
-  table[name] = val;
+    table[name] = val;
 }
 
 bool SymbolTable::found(const std::string &name) const {

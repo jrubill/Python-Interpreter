@@ -117,7 +117,6 @@ const Literal *SuiteNode::eval() const {
 
 const Literal* CallNode::eval() const {
     TableManager& tm = TableManager::getInstance();
-    std::cout << "got hit!\n";
     if (!tm.checkFunc(ident)) {
         std::cout << "function " << ident << " not found" << std::endl;
         std::exception up = std::exception();
@@ -135,6 +134,6 @@ const Literal *ReturnNode::eval() const {
 }
 
 const Literal* PrintNode::eval() const {
-    val->eval()->print();
+    val->eval()->print(); 
     return nullptr;
 }

@@ -41,6 +41,22 @@ public:
 
   virtual const Literal* flip() const = 0;
 
+  virtual const bool operator==(const Literal& rhs) const =0;
+  virtual const bool equals(float) const =0;
+  virtual const bool equals(int) const =0;
+  virtual const bool equals(std::string) const =0;
+
+  virtual const bool operator>(const Literal& rhs) const =0;
+  virtual const bool greater(float) const =0;
+  virtual const bool greater(int) const =0;
+  virtual const bool greater(std::string) const =0;
+
+  virtual const bool operator<(const Literal& rhs) const =0;
+  virtual const bool less(float) const =0;
+  virtual const bool less(int) const =0;
+  virtual const bool less(std::string) const =0;
+
+
   virtual const Literal* eval() const = 0;
   virtual void print() const { 
     std::cout << "No Way" << std::endl; 
@@ -152,6 +168,45 @@ public:
   virtual const Literal* subscript(std::string) const {
       throw std::string("Invalid subscript operation!");
   }
+  virtual const bool operator==(const Literal& rhs) const {
+      return rhs.equals(val);
+  }
+  virtual const bool equals(float) const {
+      throw std::string("comparison between string and float!");
+  }
+  virtual const bool equals(int) const {
+      throw std::string("comparison between string and int!");
+  }
+  virtual const bool equals(std::string rhs) const {
+      return (val.compare(rhs) == 0); 
+  }
+
+  virtual const bool operator>(const Literal& rhs) const {
+      throw std::string("Invalid operation!");
+  }
+  virtual const bool greater(float) const {
+      throw std::string("Invalid operation!");
+  }
+  virtual const bool greater(int) const {
+      throw std::string("Invalid operation!");
+  }
+  virtual const bool greater(std::string) const {
+      throw std::string("Invalid operation!");
+  }
+
+  virtual const bool operator<(const Literal& rhs) const {
+      throw std::string("Invalid operation!");
+  }
+  virtual const bool less(float) const {
+      throw std::string("Invalid operation!");
+  }
+  virtual const bool less(int) const {
+      throw std::string("Invalid operation!");
+  }
+  virtual const bool less(std::string) const {
+      throw std::string("Invalid operation!");
+  }
+
 
   virtual void print() const {
     std::cout << "STRING: " << val << std::endl;
@@ -284,6 +339,45 @@ virtual const Literal* flip() const {
 	PoolOfNodes::getInstance().add(node);
 	return node;
 }
+virtual const bool operator==(const Literal& rhs) const {
+    return rhs.equals(val);
+}
+virtual const bool equals(float rhs) const {
+    return val == rhs;
+}
+virtual const bool equals(int) const {
+    throw std::string("comparison between float and int!");
+}
+virtual const bool equals(std::string) const {
+    throw std::string("comparison between float and string!");
+}
+
+virtual const bool operator>(const Literal& rhs) const {
+    return rhs.less(val);
+}
+virtual const bool greater(float rhs) const {
+    return val > rhs;
+}
+virtual const bool greater(int rhs) const {
+    return val > rhs;
+}
+virtual const bool greater(std::string) const {
+    throw std::string("comparison between float and string!");
+}
+
+virtual const bool operator<(const Literal& rhs) const {
+    return rhs.greater(val);
+}
+virtual const bool less(float rhs) const {
+    return val < rhs;
+}
+virtual const bool less(int rhs) const {
+    return val < rhs;
+}
+virtual const bool less(std::string) const {
+    throw std::string("comparison between float and string!");
+}
+
 
   virtual const Literal* eval() const { return this; }
   virtual void print() const { 
@@ -425,6 +519,46 @@ virtual const Literal* subscript(std::string str) const {
     return node;
 }
   virtual const Literal* eval() const { return this; }
+
+  virtual const bool operator==(const Literal& rhs) const {
+      return rhs.equals(val);
+  }
+virtual const bool equals(float) const {
+    throw std::string("comparison between int and float!");
+}
+virtual const bool equals(int rhs) const {
+    return (val == rhs);
+}
+virtual const bool equals(std::string) const {
+    throw std::string("comparison between int and string!");
+}
+ 
+virtual const bool operator>(const Literal& rhs) const {
+    return rhs.less(val);
+} 
+virtual const bool greater(float) const {
+    throw std::string("comparison between int and float!");
+}
+virtual const bool greater(int rhs) const {
+    return val > rhs;
+}
+virtual const bool greater(std::string) const {
+    throw std::string("error!");
+}
+
+virtual const bool operator<(const Literal& rhs) const {
+    return rhs.greater(val);
+}
+virtual const bool less(float) const {
+    throw std::string("comparison between int and float!");
+} 
+virtual const bool less(int rhs) const {
+    return val == rhs;
+}
+virtual const bool less(std::string) const {
+    throw std::string("comparison between int and string!");
+}
+  
   virtual void print() const { 
     std::cout << "INT: " << val << std::endl; 
   }

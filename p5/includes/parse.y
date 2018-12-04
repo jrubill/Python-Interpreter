@@ -71,7 +71,11 @@ file_input // Used in: start
 	;
 pick_NEWLINE_stmt // Used in: star_NEWLINE_stmt
 	: NEWLINE 
-	| stmt  { if ($1) $1->eval(); 
+	| stmt  {   
+        if ($1) {  
+            try {$1->eval();} 
+            catch (...) { std::cout << "Evaluation issue\n"; } 
+            }
         }
 	;
 star_NEWLINE_stmt // Used in: file_input, star_NEWLINE_stmt
@@ -80,7 +84,7 @@ star_NEWLINE_stmt // Used in: file_input, star_NEWLINE_stmt
 	;
 decorator // Used in: decorators
 	: AT dotted_name LPAR opt_arglist RPAR NEWLINE { ; }
-	| AT dotted_name NEWLINE
+	| AT dotted_name NEWLINE { ;  }
 	;
 opt_arglist // Used in: decorator, trailer
 	: arglist
@@ -97,6 +101,7 @@ decorated // Used in: compound_stmt
 funcdef // Used in: decorated, compound_stmt
     : DEF NAME parameters COLON suite {
             $$ = new FuncNode($2, $5);
+            //m.insertFunc( $2, $$);
             pool.add($$);
             delete [] $2;
     }
@@ -229,7 +234,7 @@ print_stmt // Used in: small_stmt
 			std::cout << "Error " << str << std::endl;
 		}
 		catch ( ... ) {
-			std::cout << "oopsies" << std::endl;
+			std::cout << "An exception occured at print" << std::endl;
 		}
 	}
 	| PRINT RIGHTSHIFT test opt_test_2 { ;  }
@@ -367,7 +372,9 @@ compound_stmt // Used in: stmt
 	;
 if_stmt // Used in: compound_stmt
 	: IF test COLON suite star_ELIF ELSE COLON suite
-	| IF test COLON suite star_ELIF
+    | IF test COLON suite star_ELIF {
+        // do stuff here
+    }
 	;
 star_ELIF // Used in: if_stmt, star_ELIF
 	: star_ELIF ELIF test COLON suite
@@ -424,7 +431,6 @@ suite // Used in: funcdef, if_stmt, star_ELIF, while_stmt, for_stmt, try_stmt, p
 	: simple_stmt {$$ = $1;}
     | NEWLINE INDENT plus_stmt DEDENT {
         $$ = new SuiteNode(*$3);
-        delete $3;
         pool.add($$);
     }
 	;
@@ -480,13 +486,13 @@ comparison // Used in: not_test, comparison
 	| comparison comp_op expr
 	;
 comp_op // Used in: comparison
-	: LESS
-	| GREATER
-	| EQEQUAL
-	| GREATEREQUAL
-	| LESSEQUAL
+	: LESS { }
+	| GREATER {  }
+	| EQEQUAL {  }
+	| GREATEREQUAL {   }
+	| LESSEQUAL  {   }
 	| GRLT
-	| NOTEQUAL
+	| NOTEQUAL  {  }
 	| IN
 	| NOT IN
 	| IS

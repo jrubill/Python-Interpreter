@@ -5,7 +5,6 @@
 #include "funcTable.h"
 #include "node.h"
 #include <vector>
-
 class TableManager {
 public:
     static TableManager& getInstance();
