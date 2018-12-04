@@ -159,3 +159,25 @@ public:
 private:
     Node *val;
 };
+
+class EqualNode : public BinaryNode {
+public:
+  EqualNode(Node *left, Node *right) : BinaryNode(left, right) {}   
+  virtual const Literal* eval() const;
+};
+class LessNode: public BinaryNode {
+public:
+  LessNode(Node *left, Node *right) : BinaryNode(left, right) {}   
+  virtual const Literal* eval() const;
+};
+class GreaterNode : public BinaryNode {
+public:
+  GreaterNode(Node *left, Node *right) : BinaryNode(left, right) {}   
+  virtual const Literal* eval() const;
+};
+class NotEqualNode : public BinaryNode {
+public:
+  NotEqualNode(Node *left, Node *right) : BinaryNode(left, right) {}   
+  virtual const Literal* eval() const;
+};
+

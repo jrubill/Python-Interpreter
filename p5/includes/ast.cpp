@@ -137,3 +137,9 @@ const Literal* PrintNode::eval() const {
     val->eval()->print(); 
     return nullptr;
 }
+
+const Literal* EqualNode::eval() const {
+    const Literal *lhs = left->eval();
+    const Literal *rhs = right->eval();
+    return nullptr;
+}

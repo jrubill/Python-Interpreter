@@ -101,7 +101,7 @@ decorated // Used in: compound_stmt
 funcdef // Used in: decorated, compound_stmt
     : DEF NAME parameters COLON suite {
             $$ = new FuncNode($2, $5);
-            //m.insertFunc( $2, $$);
+            m.insertFunc( $2, $$);
             pool.add($$);
             delete [] $2;
     }
@@ -361,7 +361,7 @@ assert_stmt // Used in: small_stmt
 	| ASSERT test
 	;
 compound_stmt // Used in: stmt
-	: if_stmt { $$ = nullptr;} 
+	: if_stmt { $$ = (;)} 
 	| while_stmt { $$ = nullptr;}
 	| for_stmt { $$ = nullptr;} 
 	| try_stmt { $$ = nullptr;} 
@@ -374,11 +374,16 @@ if_stmt // Used in: compound_stmt
 	: IF test COLON suite star_ELIF ELSE COLON suite
     | IF test COLON suite star_ELIF {
         // do stuff here
+        if ($2 == true) $$ = $4;
+        else $$ = $5;
     }
 	;
 star_ELIF // Used in: if_stmt, star_ELIF
-	: star_ELIF ELIF test COLON suite
-	| %empty
+    : star_ELIF ELIF test COLON suite {
+        if ($3 == true) $$ = $5;
+        else $$ = $1;
+    }
+	| %empty { $$ = nullptr; }
 	;
 while_stmt // Used in: compound_stmt
 	: WHILE test COLON suite ELSE COLON suite
@@ -478,21 +483,32 @@ and_test // Used in: or_test, and_test
 	| and_test AND not_test
 	;
 not_test // Used in: and_test, not_test
-	: NOT not_test {$$ = $$;}
+	: NOT not_test 
 	| comparison
 	;
 comparison // Used in: not_test, comparison
 	: expr
-	| comparison comp_op expr
+    | comparison comp_op expr {
+        switch ($2) {
+        case LESS: break;
+        case GREATER: break;
+        case EQEQUAL: break;
+        case GREATEREQUAL: break;
+        case LESSEQUAL: break;
+        case NOTEQUAL: break;
+        default:
+            $$ = nullptr;
+        }
+    }
 	;
 comp_op // Used in: comparison
-	: LESS { }
-	| GREATER {  }
-	| EQEQUAL {  }
-	| GREATEREQUAL {   }
-	| LESSEQUAL  {   }
+	: LESS          { $$ = $1;}
+	| GREATER       { $$ = $1; }
+	| EQEQUAL       { $$ = $1; }
+	| GREATEREQUAL  { $$ = $1; }
+	| LESSEQUAL     { $$ = $1; }
 	| GRLT
-	| NOTEQUAL  {  }
+	| NOTEQUAL      { $$ = $1; }
 	| IN
 	| NOT IN
 	| IS
