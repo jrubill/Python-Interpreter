@@ -181,3 +181,15 @@ public:
   virtual const Literal* eval() const;
 };
 
+class IfNode : public Node {
+public: 
+    IfNode(Node *n) : val(n) {}
+    virtual ~IfNode() { delete val; }
+    virtual const Literal *eval() const;
+    IfNode(const IfNode&) = delete;
+    IfNode& operator=(const IfNode&) = delete;
+private:
+    Node *val;
+};
+
+

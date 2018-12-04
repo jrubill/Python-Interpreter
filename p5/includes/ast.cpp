@@ -12,14 +12,12 @@ const Literal* IdentNode::eval() const {
   return val;
 }
 
-
 AsgBinaryNode::AsgBinaryNode(Node* left, Node* right) : 
   BinaryNode(left, right) { 
   const Literal* res = right->eval();
   const std::string n = static_cast<IdentNode*>(left)->getIdent();
   TableManager::getInstance().insertSymb(n, res);
 }
-
 
 const Literal* AsgBinaryNode::eval() const { 
   if (!left || !right) {
@@ -102,7 +100,6 @@ const Literal *SubscriptNode::eval() const {
 
 const Literal *FuncNode::eval() const {
     TableManager::getInstance().insertFunc(ident, suite);
-    //suite->eval(); 
     return nullptr;
 }
 
@@ -136,11 +133,5 @@ const Literal *ReturnNode::eval() const {
 
 const Literal* PrintNode::eval() const {
     val->eval()->print(); 
-    return nullptr;
-}
-
-const Literal* EqualNode::eval() const {
-    const Literal *lhs = left->eval();
-    const Literal *rhs = right->eval();
     return nullptr;
 }

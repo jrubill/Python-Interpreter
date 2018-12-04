@@ -45,22 +45,21 @@ bool TableManager::checkFunc(const std::string &name) const {
 void TableManager::insertSymb(const std::string &name, const Literal *l) {
     tables[currentScope].insert(name, l);
 }
+
 void TableManager::insertFunc(const std::string &name, const Node *n) {
     functions[currentScope].insert(name, n);
 }
 
 void TableManager::updateSymb(const std::string &name, const Literal *l) {
-    tables[currentScope].setValue(name, l);
+    tables[currentScope].insert(name, l);
 }
 
-// todo: implement this with list
 void TableManager::pushScope() {
     tables.push_back(SymbolTable());
     functions.push_back(FuncTable());
     ++currentScope;
 }
 
-// todo: implement this with list
 void TableManager::popScope() {
     tables.pop_back();
     functions.pop_back();

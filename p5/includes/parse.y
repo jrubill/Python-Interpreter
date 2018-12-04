@@ -101,7 +101,6 @@ decorated // Used in: compound_stmt
 funcdef // Used in: decorated, compound_stmt
     : DEF NAME parameters COLON suite {
             $$ = new FuncNode($2, $5);
-            //m.insertFunc( $2, $$);
             pool.add($$);
             delete [] $2;
     }
@@ -171,23 +170,43 @@ small_stmt // Used in: simple_stmt, star_SEMI_small_stmt
 	;
 expr_stmt // Used in: small_stmt
 	: testlist augassign pick_yield_expr_testlist {
-		const Literal *lhs = $1->eval();	
-		const Literal *rhs = static_cast<Literal*>($3);
-		std::string name = static_cast<IdentNode*>($1)->getIdent();
-		
 		switch($2) {
-			case PLUSEQUAL: TableManager::getInstance().updateSymb(name, *lhs + *rhs);
-				break;
-			case MINEQUAL: TableManager::getInstance().updateSymb(name, *lhs - *rhs);
-				break;
-			case STAREQUAL: TableManager::getInstance().updateSymb(name, *lhs * *rhs);
-				break;
-			case SLASHEQUAL: TableManager::getInstance().updateSymb(name, *lhs / *rhs);
-				break;
-			case PERCENTEQUAL: TableManager::getInstance().updateSymb(name, *lhs % *rhs); 
-				break;
+			case PLUSEQUAL: { 
+                Node *temp = new AddBinaryNode($1, $3);
+                pool.add(temp);
+                $$ = new AsgBinaryNode($1, temp);
+                pool.add($$);
+                break;
+            }   
+			case MINEQUAL: {
+                Node *temp = new SubBinaryNode($1, $3);
+                pool.add(temp);
+                $$ = new AsgBinaryNode($1, temp);
+                pool.add($$);
+                break;
+            }
+			case STAREQUAL: {
+                Node *temp = new MulBinaryNode($1, $3);
+                pool.add(temp);
+                $$ = new AsgBinaryNode($1, temp);
+                pool.add($$);
+                break;
+            }
+			case SLASHEQUAL: {
+                Node *temp = new DivBinaryNode($1, $3);
+                pool.add(temp);
+                $$ = new AsgBinaryNode($1, temp);
+                pool.add($$);
+                break;
+            } 
+			case PERCENTEQUAL:{
+                Node *temp = new ModBinaryNode($1, $3);
+                pool.add(temp);
+                $$ = new AsgBinaryNode($1, temp);
+                pool.add($$);
+                break;
+            } 
 		}
-
 	}
 	| testlist star_EQUAL {
 		if ($2 != 0) {
@@ -485,8 +504,8 @@ and_test // Used in: or_test, and_test
 	| and_test AND not_test
 	;
 not_test // Used in: and_test, not_test
-	: NOT not_test 
-	| comparison 
+	: NOT not_test { ; }
+	| comparison { ; }
 	;
 comparison // Used in: not_test, comparison
 	: expr
@@ -498,12 +517,12 @@ comp_op // Used in: comparison
 	| EQEQUAL       { ; }
 	| GREATEREQUAL  { ; }
 	| LESSEQUAL     { ; }
-	| GRLT          
+	| GRLT          { ; }
 	| NOTEQUAL      { ; }
-	| IN
-	| NOT IN
-	| IS
-	| IS NOT
+	| IN            { ; }
+	| NOT IN        { ; }
+	| IS            { ; }
+	| IS NOT        { ; }
 	;
 expr // Used in: exec_stmt, with_item, comparison, expr, exprlist, star_COMMA_expr
 	: xor_expr
@@ -593,7 +612,7 @@ power // Used in: factor
 	}
     | atom star_trailer {
         if ($2) {
-        std::string n = reinterpret_cast<IdentNode*>($1)->getIdent();
+        std::string n = static_cast<IdentNode*>($1)->getIdent();
         $$ = new CallNode(n);
         pool.add($$);
         }
