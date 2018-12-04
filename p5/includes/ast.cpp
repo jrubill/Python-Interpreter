@@ -101,7 +101,8 @@ const Literal *SubscriptNode::eval() const {
 }
 
 const Literal *FuncNode::eval() const {
-    suite->eval(); 
+    TableManager::getInstance().insertFunc(ident, suite);
+    //suite->eval(); 
     return nullptr;
 }
 

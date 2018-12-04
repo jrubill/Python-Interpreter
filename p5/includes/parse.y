@@ -42,8 +42,8 @@
 %type<intNumber> MINUS PLUS TILDE pick_unop
 %type<intNumber> pick_PLUS_MINUS
 %type<intNumber> pick_multop  
-%type<intNumber> INT_NUM
-%type<fltNumber> FLOAT_NUM
+%type<intNumber> INT_NUM comp_op 
+%type<fltNumber> FLOAT_NUM 
 %type<node> atom arith_expr test factor and_test stmt
 %type<node> opt_test term lambdef not_test and_expr
 %type<node> power or_test comparison expr xor_expr
@@ -101,7 +101,7 @@ decorated // Used in: compound_stmt
 funcdef // Used in: decorated, compound_stmt
     : DEF NAME parameters COLON suite {
             $$ = new FuncNode($2, $5);
-            m.insertFunc( $2, $$);
+            //m.insertFunc( $2, $$);
             pool.add($$);
             delete [] $2;
     }
@@ -361,7 +361,7 @@ assert_stmt // Used in: small_stmt
 	| ASSERT test
 	;
 compound_stmt // Used in: stmt
-	: if_stmt { $$ = (;)} 
+	: if_stmt { $$ = (nullptr);} 
 	| while_stmt { $$ = nullptr;}
 	| for_stmt { $$ = nullptr;} 
 	| try_stmt { $$ = nullptr;} 
@@ -374,16 +374,18 @@ if_stmt // Used in: compound_stmt
 	: IF test COLON suite star_ELIF ELSE COLON suite
     | IF test COLON suite star_ELIF {
         // do stuff here
-        if ($2 == true) $$ = $4;
-        else $$ = $5;
+        //if ($2 == true) $$ = $4;
+        //else $$ = $5;
+        // Make an if node... 
     }
 	;
 star_ELIF // Used in: if_stmt, star_ELIF
     : star_ELIF ELIF test COLON suite {
+        /*
         if ($3 == true) $$ = $5;
-        else $$ = $1;
+        else $$ = $1; */
     }
-	| %empty { $$ = nullptr; }
+	| %empty { }
 	;
 while_stmt // Used in: compound_stmt
 	: WHILE test COLON suite ELSE COLON suite
@@ -484,31 +486,20 @@ and_test // Used in: or_test, and_test
 	;
 not_test // Used in: and_test, not_test
 	: NOT not_test 
-	| comparison
+	| comparison 
 	;
 comparison // Used in: not_test, comparison
 	: expr
-    | comparison comp_op expr {
-        switch ($2) {
-        case LESS: break;
-        case GREATER: break;
-        case EQEQUAL: break;
-        case GREATEREQUAL: break;
-        case LESSEQUAL: break;
-        case NOTEQUAL: break;
-        default:
-            $$ = nullptr;
-        }
-    }
+    | comparison comp_op expr 
 	;
 comp_op // Used in: comparison
-	: LESS          { $$ = $1;}
-	| GREATER       { $$ = $1; }
-	| EQEQUAL       { $$ = $1; }
-	| GREATEREQUAL  { $$ = $1; }
-	| LESSEQUAL     { $$ = $1; }
-	| GRLT
-	| NOTEQUAL      { $$ = $1; }
+	: LESS          { ;}
+	| GREATER       { ; }
+	| EQEQUAL       { ; }
+	| GREATEREQUAL  { ; }
+	| LESSEQUAL     { ; }
+	| GRLT          
+	| NOTEQUAL      { ; }
 	| IN
 	| NOT IN
 	| IS
