@@ -148,7 +148,7 @@ star_fpdef_notest // Used in: fplist, star_fpdef_notest
 	;
 stmt // Used in: pick_NEWLINE_stmt, plus_stmt
 	: simple_stmt { $$ = $1; }
-	| compound_stmt {; }
+	| compound_stmt { $$ = $1; }
 	;
 simple_stmt // Used in: stmt, suite
 	: small_stmt star_SEMI_small_stmt SEMI NEWLINE { ;  }
@@ -398,7 +398,8 @@ if_stmt // Used in: compound_stmt
 		pool.add($$);
 	}
     | IF test COLON suite star_ELIF {
-        //$$ = new IfNode($1, $2, $3);
+        $$ = new IfNode($2, $4, nullptr);
+		pool.add($$);
 		// do stuff here
         //if ($2 == true) $$ = $4;
         //else $$ = $5;

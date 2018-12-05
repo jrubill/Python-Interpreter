@@ -194,4 +194,3 @@ private:
     Node *test, *ifSuite, *elseSuite;
 };
 
-

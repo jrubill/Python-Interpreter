@@ -150,7 +150,7 @@ const Literal *IfNode::eval() const {
 	if (dynamic_cast<EqualNode*>(test)) {
 		bool status = static_cast<EqualNode*>(test)->getStatus();
 		if (status) {
-			return ifSuite->eval();	
+			ifSuite->eval();	
 		}
 		else {
 			if (elseSuite) return elseSuite->eval();	
