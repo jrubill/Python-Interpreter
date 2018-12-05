@@ -132,7 +132,7 @@ const Literal *ReturnNode::eval() const {
 }
 
 const Literal* PrintNode::eval() const {
-    val->eval()->print(); 
+    (val->eval())->print(); 
     return nullptr;
 }
 
@@ -180,6 +180,8 @@ bool NotEqualNode::getStatus() {
 }
 
 const Literal *IfNode::eval() const {
+	TableManager &tm = TableManager::getInstance();
+
 	bool status = static_cast<CompNode*>(test)->getStatus();
 	if (status) {
 		ifSuite->eval();	

@@ -298,6 +298,7 @@ continue_stmt // Used in: flow_stmt
 return_stmt // Used in: flow_stmt
     : RETURN testlist {
         $$ = new ReturnNode($2);
+	TableManager::getInstance().insertSymb("__RETURN__", static_cast<const Literal*>($$) );
         pool.add($$);
     }
     | RETURN {
