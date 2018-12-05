@@ -553,7 +553,7 @@ virtual bool less(float) const {
     throw std::string("comparison between int and float!");
 } 
 virtual bool less(int rhs) const {
-    return val == rhs;
+   return val < rhs;
 }
 virtual bool less(std::string) const {
     throw std::string("comparison between int and string!");
