@@ -520,9 +520,13 @@ comparison // Used in: not_test, comparison
     | comparison comp_op expr {
 			switch($2) {
 				case LESS: {
-					break;	
+					$$ = new LessNode($1, $3);
+                    pool.add($$);
+                    break;	
 				}
 				case GREATER: {
+                    $$ = new GreaterNode($1, $3);
+                    pool.add($$);
 					break;	
 				}
 				case EQEQUAL: {

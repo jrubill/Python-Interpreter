@@ -136,25 +136,56 @@ const Literal* PrintNode::eval() const {
     return nullptr;
 }
 
+const Literal *CompNode::eval() const {
+	return nullptr;
+}
 const Literal *EqualNode::eval() const {
 	return nullptr;
 }
 
+const Literal *LessNode::eval() const {
+	return nullptr;
+}
+
+const Literal *GreaterNode::eval() const {
+	return nullptr;
+}
+
+const Literal *NotEqualNode::eval() const {
+	return nullptr;
+}
+
+bool CompNode::getStatus() {
+    return false;
+}
 bool EqualNode::getStatus() {
 	const Literal *lhs = left->eval();
     const Literal *rhs = right->eval();
 	return ((*lhs) == (*rhs));
 }
+bool LessNode::getStatus() {
+	const Literal *lhs = left->eval();
+    const Literal *rhs = right->eval();
+	return ((*lhs) < (*rhs));
+}
+bool GreaterNode::getStatus() {
+	const Literal *lhs = left->eval();
+    const Literal *rhs = right->eval();
+	return ((*lhs) > (*rhs));
+}
+bool NotEqualNode::getStatus() {
+	const Literal *lhs = left->eval();
+    const Literal *rhs = right->eval();
+	return !((*lhs) == (*rhs));
+}
 
 const Literal *IfNode::eval() const {
-	if (dynamic_cast<EqualNode*>(test)) {
-		bool status = static_cast<EqualNode*>(test)->getStatus();
-		if (status) {
-			ifSuite->eval();	
-		}
-		else {
-			if (elseSuite) return elseSuite->eval();	
-		}	
+	bool status = static_cast<CompNode*>(test)->getStatus();
+	if (status) {
+		ifSuite->eval();	
 	}
+	else {
+		if (elseSuite) return elseSuite->eval();	
+	}	
 	return nullptr;
 }

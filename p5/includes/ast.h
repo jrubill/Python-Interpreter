@@ -159,28 +159,36 @@ public:
 private:
     Node *val;
 };
-
-class EqualNode : public BinaryNode {
+class CompNode : public BinaryNode {
 public:
-  EqualNode(Node *left, Node *right) : BinaryNode(left, right) {}   
+    CompNode(Node *left, Node *right) : BinaryNode(left, right) {}
+    virtual const Literal* eval() const;
+    virtual bool getStatus();
+};
+class EqualNode : public CompNode {
+public:
+  EqualNode(Node *left, Node *right) : CompNode(left, right) {}   
   virtual const Literal* eval() const;
-  bool getStatus();
+  virtual bool getStatus();
 private:
 };
-class LessNode: public BinaryNode {
+class LessNode: public CompNode {
 public:
-  LessNode(Node *left, Node *right) : BinaryNode(left, right) {}   
+  LessNode(Node *left, Node *right) : CompNode(left, right) {}   
   virtual const Literal* eval() const;
+  virtual bool getStatus();
 };
-class GreaterNode : public BinaryNode {
+class GreaterNode : public CompNode {
 public:
-  GreaterNode(Node *left, Node *right) : BinaryNode(left, right) {}   
+  GreaterNode(Node *left, Node *right) : CompNode(left, right) {}   
   virtual const Literal* eval() const;
+  virtual bool getStatus();
 };
-class NotEqualNode : public BinaryNode {
+class NotEqualNode : public CompNode {
 public:
-  NotEqualNode(Node *left, Node *right) : BinaryNode(left, right) {}   
+  NotEqualNode(Node *left, Node *right) : CompNode(left, right) {}   
   virtual const Literal* eval() const;
+  virtual bool getStatus();
 };
 
 class IfNode : public Node {
