@@ -50,6 +50,7 @@
 %type<node> shift_expr star_EQUAL expr_stmt testlist star_trailer trailer
 %type<node> pick_yield_expr_testlist subscript opt_yield_test subscriptlist
 %type<node> return_stmt funcdef suite decorator simple_stmt decorated print_stmt compound_stmt
+%type<node> if_stmt opt_IF_ELSE
 %type<suite> plus_stmt 
 %type<id> plus_STRING STRING
 %type<intNumber> augassign
@@ -380,7 +381,7 @@ assert_stmt // Used in: small_stmt
 	| ASSERT test
 	;
 compound_stmt // Used in: stmt
-	: if_stmt { $$ = (nullptr);} 
+	: if_stmt { $$ = $1;} 
 	| while_stmt { $$ = nullptr;}
 	| for_stmt { $$ = nullptr;} 
 	| try_stmt { $$ = nullptr;} 
@@ -390,9 +391,15 @@ compound_stmt // Used in: stmt
 	| decorated { $$ = nullptr;} 
 	;
 if_stmt // Used in: compound_stmt
-	: IF test COLON suite star_ELIF ELSE COLON suite
+	: IF test COLON suite star_ELIF ELSE COLON suite {
+		$$ = new IfNode($2, $4, $8);
+		if ($8 == nullptr) std::cout << "oops" << std::endl;
+		if ($4 == nullptr) std::cout << "suite is null\n";
+		pool.add($$);
+	}
     | IF test COLON suite star_ELIF {
-        // do stuff here
+        //$$ = new IfNode($1, $2, $3);
+		// do stuff here
         //if ($2 == true) $$ = $4;
         //else $$ = $5;
         // Make an if node... 
@@ -454,7 +461,7 @@ opt_AS_COMMA // Used in: except_clause
 	| %empty
 	;
 suite // Used in: funcdef, if_stmt, star_ELIF, while_stmt, for_stmt, try_stmt, plus_except, opt_ELSE, opt_FINALLY, with_stmt, classdef
-	: simple_stmt {$$ = $1;}
+	: simple_stmt { $$ = $1; }
     | NEWLINE INDENT plus_stmt DEDENT {
         $$ = new SuiteNode(*$3);
         pool.add($$);
@@ -488,34 +495,48 @@ old_lambdef // Used in: old_test
 	| LAMBDA COLON old_test
 	;
 test // Used in: opt_EQUAL_test, print_stmt, star_COMMA_test, opt_test, plus_COMMA_test, raise_stmt, opt_COMMA_test, opt_test_3, exec_stmt, assert_stmt, if_stmt, star_ELIF, while_stmt, with_item, except_clause, opt_AS_COMMA, opt_IF_ELSE, listmaker, testlist_comp, lambdef, subscript, opt_test_only, sliceop, testlist, dictorsetmaker, star_test_COLON_test, opt_DOUBLESTAR_test, pick_argument, argument, testlist1
-	: or_test opt_IF_ELSE
+	: or_test opt_IF_ELSE { $$ = $1; }
 	| lambdef
 	;
 opt_IF_ELSE // Used in: test
-	: IF or_test ELSE test
-	| %empty
+	: IF or_test ELSE test { $$ = $2; }
+	| %empty { $$ = nullptr; }
 	;
 or_test // Used in: old_test, test, opt_IF_ELSE, or_test, comp_for
-	: and_test
+	: and_test { $$ = $1;}
 	| or_test OR and_test
 	;
 and_test // Used in: or_test, and_test
-	: not_test
+	: not_test { $$ = $1; }
 	| and_test AND not_test
 	;
 not_test // Used in: and_test, not_test
 	: NOT not_test { ; }
-	| comparison { ; }
+	| comparison { $$ = $1; }
 	;
 comparison // Used in: not_test, comparison
-	: expr
-    | comparison comp_op expr 
+	: expr { $$ = $1; }
+    | comparison comp_op expr {
+			switch($2) {
+				case LESS: {
+					break;	
+				}
+				case GREATER: {
+					break;	
+				}
+				case EQEQUAL: {
+					$$ = new EqualNode($1, $3);
+					pool.add($$);
+					break;
+				}
+			}
+		}
 	;
 comp_op // Used in: comparison
-	: LESS          { ;}
-	| GREATER       { ; }
-	| EQEQUAL       { ; }
-	| GREATEREQUAL  { ; }
+	: LESS          { $$ = LESS; }
+	| GREATER       { $$ = GREATER; }
+	| EQEQUAL       { $$ = EQEQUAL; }
+	| GREATEREQUAL  { $$ = GREATEREQUAL; }
 	| LESSEQUAL     { ; }
 	| GRLT          { ; }
 	| NOTEQUAL      { ; }

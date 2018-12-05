@@ -164,6 +164,8 @@ class EqualNode : public BinaryNode {
 public:
   EqualNode(Node *left, Node *right) : BinaryNode(left, right) {}   
   virtual const Literal* eval() const;
+  bool getStatus();
+private:
 };
 class LessNode: public BinaryNode {
 public:
@@ -183,13 +185,13 @@ public:
 
 class IfNode : public Node {
 public: 
-    IfNode(Node *n) : val(n) {}
-    virtual ~IfNode() { delete val; }
+    IfNode(Node *_test, Node *_ifSuite, Node *_elseSuite) : test(_test), ifSuite(_ifSuite), elseSuite(_elseSuite) {}
+    virtual ~IfNode() { delete test; }
     virtual const Literal *eval() const;
     IfNode(const IfNode&) = delete;
     IfNode& operator=(const IfNode&) = delete;
 private:
-    Node *val;
+    Node *test, *ifSuite, *elseSuite;
 };
 
 

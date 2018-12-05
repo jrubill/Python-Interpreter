@@ -105,7 +105,7 @@ const Literal *FuncNode::eval() const {
 
 const Literal *SuiteNode::eval() const {
     for (const Node *n : statements) {
-        n->eval();
+        if (n != nullptr) n->eval();
         // check for a return statement
         if (TableManager::getInstance().checkName("__RETURN__"))
             break;
@@ -134,4 +134,27 @@ const Literal *ReturnNode::eval() const {
 const Literal* PrintNode::eval() const {
     val->eval()->print(); 
     return nullptr;
+}
+
+const Literal *EqualNode::eval() const {
+	return nullptr;
+}
+
+bool EqualNode::getStatus() {
+	const Literal *lhs = left->eval();
+    const Literal *rhs = right->eval();
+	return ((*lhs) == (*rhs));
+}
+
+const Literal *IfNode::eval() const {
+	if (dynamic_cast<EqualNode*>(test)) {
+		bool status = static_cast<EqualNode*>(test)->getStatus();
+		if (status) {
+			return ifSuite->eval();	
+		}
+		else {
+			if (elseSuite) return elseSuite->eval();	
+		}	
+	}
+	return nullptr;
 }
