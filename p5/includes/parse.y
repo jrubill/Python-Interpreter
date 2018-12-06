@@ -535,6 +535,22 @@ comparison // Used in: not_test, comparison
 					pool.add($$);
 					break;
 				}
+				case LESSEQUAL: {
+					$$ = new LessEqualNode($1,$3);
+					pool.add($$);
+					break;
+				}
+				case GREATEREQUAL: {
+					
+					$$ = new GreaterEqualNode($1, $3);
+					pool.add($$);
+					break;
+				}
+				case NOTEQUAL: {
+					$$ = new NotEqualNode($1, $3);
+					pool.add($$);
+					break;
+				}
 			}
 		}
 	;
@@ -543,9 +559,9 @@ comp_op // Used in: comparison
 	| GREATER       { $$ = GREATER; }
 	| EQEQUAL       { $$ = EQEQUAL; }
 	| GREATEREQUAL  { $$ = GREATEREQUAL; }
-	| LESSEQUAL     { ; }
+	| LESSEQUAL     { $$ = LESSEQUAL; }
 	| GRLT          { ; }
-	| NOTEQUAL      { ; }
+	| NOTEQUAL      { $$ = NOTEQUAL; }
 	| IN            { ; }
 	| NOT IN        { ; }
 	| IS            { ; }

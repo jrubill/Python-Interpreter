@@ -151,6 +151,13 @@ const Literal *GreaterNode::eval() const {
 	return nullptr;
 }
 
+const Literal *GreaterEqualNode::eval() const {
+	return nullptr;
+}
+const Literal *LessEqualNode::eval() const {
+	return nullptr;
+}
+
 const Literal *NotEqualNode::eval() const {
 	return nullptr;
 }
@@ -177,6 +184,16 @@ bool NotEqualNode::getStatus() {
 	const Literal *lhs = left->eval();
     const Literal *rhs = right->eval();
 	return !((*lhs) == (*rhs));
+}
+bool LessEqualNode::getStatus() {
+	const Literal *lhs = left->eval();
+    const Literal *rhs = right->eval();
+	return ((*lhs) <= (*rhs));
+}
+bool GreaterEqualNode::getStatus() {
+	const Literal *lhs = left->eval();
+    const Literal *rhs = right->eval();
+	return ((*lhs) >= (*rhs));
 }
 
 const Literal *IfNode::eval() const {

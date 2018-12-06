@@ -178,18 +178,35 @@ public:
   virtual const Literal* eval() const;
   virtual bool getStatus();
 };
+class LessEqualNode : public CompNode {
+public:
+  LessEqualNode(Node *left, Node *right) : CompNode(left, right) {}
+  virtual const Literal* eval() const;
+  virtual bool getStatus();
+};
+
 class GreaterNode : public CompNode {
 public:
   GreaterNode(Node *left, Node *right) : CompNode(left, right) {}   
   virtual const Literal* eval() const;
   virtual bool getStatus();
 };
+
+class GreaterEqualNode : public CompNode {
+public:
+  GreaterEqualNode(Node *left, Node *right) : CompNode(left, right) {}
+  virtual const Literal* eval() const;
+  virtual bool getStatus();
+};
+
 class NotEqualNode : public CompNode {
 public:
   NotEqualNode(Node *left, Node *right) : CompNode(left, right) {}   
   virtual const Literal* eval() const;
   virtual bool getStatus();
 };
+
+
 
 class IfNode : public Node {
 public: 

@@ -56,6 +56,9 @@ public:
   virtual bool less(int) const =0;
   virtual bool less(std::string) const =0;
 
+  virtual bool operator<=(const Literal&) const = 0;
+  virtual bool operator>=(const Literal&) const = 0;
+  virtual bool operator!=(const Literal&) const = 0;
 
   virtual const Literal* eval() const = 0;
   virtual void print() const { 
@@ -207,6 +210,16 @@ public:
       throw std::string("Invalid operation!");
   }
 
+  virtual bool operator<=(const Literal&) const {
+  	throw std::string("Invalid operation!");
+  }
+  virtual bool operator>=(const Literal&) const {
+  	throw std::string("Invalid operation!");
+  }
+  virtual bool operator!=(const Literal&) const {
+  	throw std::string("Invalid operation!");
+  }
+  
 
   virtual void print() const {
     std::cout << "STRING: " << val << std::endl;
@@ -376,6 +389,16 @@ virtual bool less(int rhs) const {
 }
 virtual bool less(std::string) const {
     throw std::string("comparison between float and string!");
+}
+virtual bool operator<=(const Literal& rhs) const {
+	return (rhs.greater(val) || rhs.equals(val));
+
+}
+virtual bool operator>=(const Literal& rhs) const {
+	return (rhs.less(val) || rhs.equals(val));
+}
+virtual bool operator!=(const Literal& rhs) const {
+	return (!rhs.equals(val));
 }
 
 
@@ -557,6 +580,15 @@ virtual bool less(int rhs) const {
 }
 virtual bool less(std::string) const {
     throw std::string("comparison between int and string!");
+}
+virtual bool operator<=(const Literal& rhs) const {
+	return (rhs.greater(val) || rhs.equals(val));
+}
+virtual bool operator>=(const Literal& rhs) const {
+	return (rhs.less(val) || rhs.equals(val));
+}
+virtual bool operator!=(const Literal& rhs) const {
+	return (!rhs.equals(val));
 }
   
   virtual void print() const { 
