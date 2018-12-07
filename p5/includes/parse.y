@@ -112,7 +112,8 @@ parameters // Used in: funcdef
 	;
 varargslist // Used in: parameters, old_lambdef, lambdef
 	: star_fpdef_COMMA pick_STAR_DOUBLESTAR {
-        $$ = nullptr; 
+        //$$ = $1;
+        //$$->push_back($2);
     }
 	| star_fpdef_COMMA fpdef opt_EQUAL_test opt_COMMA
 	;
