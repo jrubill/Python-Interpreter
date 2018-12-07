@@ -219,3 +219,18 @@ private:
     Node *test, *ifSuite, *elseSuite;
 };
 
+class ArgsNode : public Node {
+public:
+	ArgsNode(std::vector<Node*> _args) : args(_args) {}
+    virtual ~ArgsNode() {}	
+    virtual const Literal *eval() const;
+    ArgsNode(const ArgsNode&) = delete;
+    SuiteNode& operator=(const ArgsNode&) = delete;
+
+private:
+    std::vector<Node*> args;
+};
+
+
+
+

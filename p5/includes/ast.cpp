@@ -128,6 +128,7 @@ const Literal* CallNode::eval() const {
 }
 
 const Literal *ReturnNode::eval() const {
+    TableManager::getInstance().insertSymb("__RETURN__", val->eval());
     return val->eval();
 }
 
@@ -197,7 +198,6 @@ bool GreaterEqualNode::getStatus() {
 }
 
 const Literal *IfNode::eval() const {
-	TableManager &tm = TableManager::getInstance();
 
 	bool status = static_cast<CompNode*>(test)->getStatus();
 	if (status) {
@@ -208,3 +208,12 @@ const Literal *IfNode::eval() const {
 	}	
 	return nullptr;
 }
+
+const Literal *ArgsNode::eval() const {
+   // place into symbol table . . . ? 
+    return nullptr;
+}
+
+
+
+

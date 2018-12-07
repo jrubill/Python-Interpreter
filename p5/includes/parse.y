@@ -50,8 +50,8 @@
 %type<node> shift_expr star_EQUAL expr_stmt testlist star_trailer trailer
 %type<node> pick_yield_expr_testlist subscript opt_yield_test subscriptlist
 %type<node> return_stmt funcdef suite decorator simple_stmt decorated print_stmt compound_stmt
-%type<node> if_stmt opt_IF_ELSE
-%type<suite> plus_stmt 
+%type<node> if_stmt opt_IF_ELSE parameters 
+%type<suite> plus_stmt varargslist 
 %type<id> plus_STRING STRING
 %type<intNumber> augassign
 %type<id> NAME
@@ -101,17 +101,19 @@ decorated // Used in: compound_stmt
 	;
 funcdef // Used in: decorated, compound_stmt
     : DEF NAME parameters COLON suite {
-            $$ = new FuncNode($2, $5);
-            pool.add($$);
-            delete [] $2;
+        $$ = new FuncNode($2, $5);
+        pool.add($$);
+        delete [] $2;
     }
 	;
 parameters // Used in: funcdef
-	: LPAR varargslist RPAR
-	| LPAR RPAR
+	: LPAR varargslist RPAR { $$ = new ArgsNode(*$2); pool.add($$); }
+	| LPAR RPAR { $$ = nullptr; }
 	;
 varargslist // Used in: parameters, old_lambdef, lambdef
-	: star_fpdef_COMMA pick_STAR_DOUBLESTAR
+	: star_fpdef_COMMA pick_STAR_DOUBLESTAR {
+        $$ = nullptr; 
+    }
 	| star_fpdef_COMMA fpdef opt_EQUAL_test opt_COMMA
 	;
 opt_EQUAL_test // Used in: varargslist, star_fpdef_COMMA
@@ -298,7 +300,7 @@ continue_stmt // Used in: flow_stmt
 return_stmt // Used in: flow_stmt
     : RETURN testlist {
         $$ = new ReturnNode($2);
-	TableManager::getInstance().insertSymb("__RETURN__", static_cast<const Literal*>($$) );
+	    // TableManager::getInstance().insertSymb("__RETURN__", static_cast<const Literal*>($2) );
         pool.add($$);
     }
     | RETURN {
