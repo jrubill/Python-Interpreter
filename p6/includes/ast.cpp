@@ -145,11 +145,6 @@ const Literal* CallNode::eval() const {
 	const Literal *result = tm.getEntry("__RETURN__");
     tm.popScope();
     return result;
-	/*tm.pushScope();
-    tm.getSuite(ident)->eval();
-    const Literal *result = tm.getEntry("__RETURN__");
-    tm.popScope();
-    return result;*/
 }
 
 const Literal *ReturnNode::eval() const {

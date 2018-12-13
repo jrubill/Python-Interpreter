@@ -90,7 +90,7 @@ decorator // Used in: decorators
 	;
 opt_arglist // Used in: decorator, trailer
 	: arglist { $$ = $1; }
-	| %empty
+	| %empty { $$ = nullptr; }
 	;
 decorators // Used in: decorators, decorated
 	: decorators decorator { ;  }
@@ -153,7 +153,7 @@ opt_COMMA // Used in: varargslist, opt_test, opt_test_2, testlist_safe, listmake
 	;
 fpdef // Used in: varargslist, star_fpdef_COMMA, fplist, star_fpdef_notest
 	: NAME { $$ = new IdentNode($1); pool.add($$); }
-	| LPAR fplist RPAR
+	| LPAR fplist RPAR {$$ = nullptr; } 
 	;
 fplist // Used in: fpdef
 	: fpdef star_fpdef_notest COMMA
@@ -844,8 +844,8 @@ pick_argument // Used in: arglist
 	: argument opt_COMMA { 
         $$ = $1;
     } 
-	| STAR test star_COMMA_argument opt_DOUBLESTAR_test
-	| DOUBLESTAR test 
+	| STAR test star_COMMA_argument opt_DOUBLESTAR_test {;}
+	| DOUBLESTAR test  {;}
 	;
 argument // Used in: star_argument_COMMA, star_COMMA_argument, pick_argument
 	: test opt_comp_for { $$ = $1; }
