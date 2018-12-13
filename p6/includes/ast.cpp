@@ -122,7 +122,7 @@ const Literal* CallNode::eval() const {
         std::exception up = std::exception();
         throw up;
     }
-    if (params) {
+    if (dynamic_cast<ArgsNode*>(params)) {
 		std::vector<Node*> args = static_cast<ArgsNode*>(params)->getArgs();
 		const FuncNode *func = static_cast<const FuncNode *>(tm.getFunc(ident));
 		std::vector<Node*> parameters = static_cast<ArgsNode*>(func->getParams())->getArgs();

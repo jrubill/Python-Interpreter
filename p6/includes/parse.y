@@ -110,7 +110,7 @@ parameters // Used in: funcdef
 	: LPAR varargslist RPAR { 
 		$$ = new ArgsNode(*$2); pool.add($$); 
         }
-	| LPAR RPAR { $$ = nullptr; }
+	| LPAR RPAR { $$ = nullptr; std::cout << "nullptr!\n"; }
 	;
 varargslist // Used in: parameters, old_lambdef, lambdef
 	: star_fpdef_COMMA pick_STAR_DOUBLESTAR {
@@ -673,7 +673,7 @@ power // Used in: factor
     | atom star_trailer {
         if ($2) {
         std::string n = static_cast<IdentNode*>($1)->getIdent();
-        $$ = new CallNode(n, $2);
+		$$ = new CallNode(n, $2);
         pool.add($$);
         }
         else $$ = $1;
@@ -706,7 +706,7 @@ pick_yield_expr_testlist_comp // Used in: opt_yield_test
 	;
 opt_yield_test // Used in: atom
 	: pick_yield_expr_testlist_comp { ; }
-	| %empty { ; }
+	| %empty { $$ = nullptr; }
 	;
 opt_listmaker // Used in: atom
 	: listmaker
