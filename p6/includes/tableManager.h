@@ -5,6 +5,7 @@
 #include "funcTable.h"
 #include "node.h"
 #include <vector>
+
 class TableManager {
 public:
     static TableManager& getInstance();
@@ -19,7 +20,9 @@ public:
 
 
     void updateSymb(const std::string &name, const Literal *l);
-    void pushScope();
+	const Node *getFunc(const std::string &name);
+
+	void pushScope();
     void popScope();
     void display() const;
 
@@ -28,11 +31,10 @@ private:
     // todo: change these to lists
     std::vector<SymbolTable> tables;
     std::vector<FuncTable> functions;
-    TableManager() : currentScope(0), tables(), functions() {
+	TableManager() : currentScope(0), tables(), functions() {
         tables.push_back(SymbolTable());
         functions.push_back(FuncTable());
     }
-
 };
 
 #endif // __TABLEMANAGER_H__

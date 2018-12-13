@@ -104,12 +104,15 @@ public:
 
 class CallNode : public Node {
 public:
-    CallNode(const std::string &str) : Node(), ident(str) {}
-    virtual ~CallNode() {}
+    CallNode(const std::string &str, Node *_params) : Node(), ident(str), params(_params) {}
+    virtual ~CallNode() { delete params; }
     const std::string getIdent() const { return ident;  }
-    virtual const Literal* eval() const;
+    CallNode(const CallNode&) = delete;
+    CallNode& operator=(const CallNode&) = delete;
+	virtual const Literal* eval() const;
 private:
     std::string ident;
+	Node *params;
 };
 
 
@@ -120,7 +123,8 @@ public:
     virtual const Literal *eval() const;
     FuncNode(const FuncNode&) = delete;
     FuncNode& operator=(const FuncNode&) = delete;
-
+	Node *getParams() const { return params; }
+	Node *getSuite() const { return suite; }
 private:
     std::string ident;
     Node *params;
@@ -227,11 +231,9 @@ public:
     virtual const Literal *eval() const;
     ArgsNode(const ArgsNode&) = delete;
     SuiteNode& operator=(const ArgsNode&) = delete;
+	const std::vector<Node*>& getArgs() const;
 
 private:
     std::vector<Node*> args;
 };
-
-
-
 

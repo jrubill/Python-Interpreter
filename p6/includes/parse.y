@@ -74,8 +74,9 @@ pick_NEWLINE_stmt // Used in: star_NEWLINE_stmt
 	: NEWLINE 
 	| stmt  {   
         if ($1) {  
-            try {$1->eval();} 
-            catch (...) { std::cout << "Evaluation issue\n"; } 
+            $1->eval();
+			//try {$1->eval();} 
+            //catch (...) { std::cout << "Evaluation issue\n"; } 
             }
         }
 	;
@@ -102,28 +103,29 @@ decorated // Used in: compound_stmt
 funcdef // Used in: decorated, compound_stmt
     : DEF NAME parameters COLON suite {
         $$ = new FuncNode($2, $3, $5);
-        pool.add($$);
+		pool.add($$);
     }
 	;
 parameters // Used in: funcdef
 	: LPAR varargslist RPAR { 
-        $$ = new ArgsNode(*$2); pool.add($$); 
-        delete $2;
+		$$ = new ArgsNode(*$2); pool.add($$); 
         }
 	| LPAR RPAR { $$ = nullptr; }
 	;
 varargslist // Used in: parameters, old_lambdef, lambdef
 	: star_fpdef_COMMA pick_STAR_DOUBLESTAR {
-    }
+	}
 	| star_fpdef_COMMA fpdef opt_EQUAL_test opt_COMMA {
         if ($1) {
             if ($2) {
                 $1->push_back($2);
-                $$ = $1;
-                for (const Node *n : *$1)
-                    std::cout << static_cast<const IdentNode*>(n)->getIdent() << std::endl;
             }
-        } 
+        }
+		else {
+			$1 = new std::vector<Node *>();
+			if ($2) $1->push_back($2);
+		}
+		$$ = $1;
     }
 	;
 opt_EQUAL_test // Used in: varargslist, star_fpdef_COMMA
@@ -671,7 +673,7 @@ power // Used in: factor
     | atom star_trailer {
         if ($2) {
         std::string n = static_cast<IdentNode*>($1)->getIdent();
-        $$ = new CallNode(n);
+        $$ = new CallNode(n, $2);
         pool.add($$);
         }
         else $$ = $1;
@@ -740,7 +742,6 @@ trailer // Used in: star_trailer
 	: LPAR opt_arglist RPAR { 
         if ($2) {
             $$ = $2;
-            std::cout << "Arg list in trailer\n";
         }
     }
 	| LSQB subscriptlist RSQB { 
@@ -811,12 +812,10 @@ opt_testlist // Used in: classdef
 	;
 arglist // Used in: opt_arglist
 	: star_argument_COMMA pick_argument {
-        std::cout << "AHHH!!!!\n";
-        if ($1) {
-            if ($2) {
-                $1->push_back($2);
-            }
-        }
+        if (!$1) $1 = new std::vector<Node*>();
+        $1->push_back($2);
+	    $$ = new ArgsNode(*$1);
+
     }
 	;
 star_argument_COMMA // Used in: arglist, star_argument_COMMA
@@ -830,7 +829,6 @@ star_argument_COMMA // Used in: arglist, star_argument_COMMA
             $$ = new std::vector<Node*>();
             $$->push_back($2);
         }
-        std::cout << "STAR ARGUMENT COMMA\n";
     }
 	| %empty { $$ = nullptr; } 
 	;
@@ -843,7 +841,7 @@ opt_DOUBLESTAR_test // Used in: pick_argument
 	| %empty
 	;
 pick_argument // Used in: arglist
-	: argument opt_COMMA { // std::cout << "woo!" << std::endl; 
+	: argument opt_COMMA { 
         $$ = $1;
     } 
 	| STAR test star_COMMA_argument opt_DOUBLESTAR_test

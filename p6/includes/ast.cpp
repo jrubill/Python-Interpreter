@@ -99,9 +99,11 @@ const Literal *SubscriptNode::eval() const {
 }
 
 const Literal *FuncNode::eval() const {
-    TableManager::getInstance().insertFunc(ident, suite);
-    return nullptr;
+    //TableManager::getInstance().insertFunc(ident, suite);
+	TableManager::getInstance().insertFunc(ident, this);
+	return nullptr;
 }
+
 
 const Literal *SuiteNode::eval() const {
     for (const Node *n : statements) {
@@ -120,11 +122,34 @@ const Literal* CallNode::eval() const {
         std::exception up = std::exception();
         throw up;
     }
-    tm.pushScope();
+    if (params) {
+		std::vector<Node*> args = static_cast<ArgsNode*>(params)->getArgs();
+		const FuncNode *func = static_cast<const FuncNode *>(tm.getFunc(ident));
+		std::vector<Node*> parameters = static_cast<ArgsNode*>(func->getParams())->getArgs();
+		if (args.size() != parameters.size()) {
+			std::cout << "incorrect param number\n";
+			std::exception up = std::exception();
+			throw up;	
+		}
+		//tm.pushScope();
+		std::vector<const Literal*> literals;
+		literals.reserve(args.size());
+		for (unsigned int i = 0; i < args.size(); i++)
+			literals.push_back(args[i]->eval());
+		tm.pushScope();
+		for (unsigned int i = 0; i < args.size(); i++)
+			tm.insertSymb(static_cast<IdentNode*>(parameters[i])->getIdent(), literals[i]);
+	}
+	else tm.pushScope();
+	tm.getSuite(ident)->eval();
+	const Literal *result = tm.getEntry("__RETURN__");
+    tm.popScope();
+    return result;
+	/*tm.pushScope();
     tm.getSuite(ident)->eval();
     const Literal *result = tm.getEntry("__RETURN__");
     tm.popScope();
-    return result;
+    return result;*/
 }
 
 const Literal *ReturnNode::eval() const {
@@ -211,9 +236,13 @@ const Literal *IfNode::eval() const {
 
 const Literal *ArgsNode::eval() const {
    // place into symbol table . . . ? 
-    return nullptr;
+    
+   return nullptr;
 }
 
+const std::vector<Node*>& ArgsNode::getArgs() const {
+	return args;
+}
 
 
 

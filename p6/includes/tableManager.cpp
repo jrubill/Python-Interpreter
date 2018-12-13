@@ -1,5 +1,5 @@
 #include "tableManager.h"
-
+#include "ast.h"
 TableManager& TableManager::getInstance() {
     static TableManager instance;
     return instance;
@@ -9,7 +9,7 @@ const Node *TableManager::getSuite(const std::string &name) {
     int scope = currentScope;
     while (scope >= 0) {
         if (functions[scope].found(name))
-            return functions[scope].getEntry(name);
+            return static_cast<const FuncNode*>(functions[scope].getEntry(name))->getSuite();
         --scope;
     }
     return nullptr;
@@ -22,6 +22,14 @@ const Literal *TableManager::getEntry(const std::string &name) {
         --scope;
     }
     return nullptr;
+}
+const Node *TableManager::getFunc(const std::string &name) {
+	int scope = currentScope;
+	while (scope >= 0) {
+		if (functions[scope].found(name)) return functions[scope].getEntry(name);
+		--scope;
+	}
+	return nullptr;
 }
 
 bool TableManager::checkName(const std::string &name) const {
@@ -73,3 +81,4 @@ void TableManager::popScope() {
     functions.pop_back();
     --currentScope;
 }
+
